@@ -18,12 +18,16 @@ var TreeView = function() {
     this.linestyle=1;
     //节点样式
     this.rectangle = {"width": 40, "height": 20, "strokecolor": "#ffffff", "fillcolor": "#0dd7ff"};
-    
+    //目前选中的节点
+    this.selectpoints=[];
+    //单选模式 1单选 2多选
+    this.singlechoice=1;
     var _container;
     var _canvas;
     var _data;
     var _toppoints = [];
     var self;
+
     this.init = function(params) {
         self = this;
         //begin 处理传入参数
@@ -43,20 +47,19 @@ var TreeView = function() {
         _canvas = _container.getContext("2d");
         _procData(_data);
         //end 处理传入参数
+
         //begin 画图
         drawAllTree(_data);
         //end 画图
+        procClick();
     };
     //画出多棵树
     var drawAllTree = function(data) {
         for (var i = 0, l = _toppoints.length; i < l; i++) {
             _currentX = self.leftmargin;
             drawTree(_toppoints[i]);
-//            drawLine();
-            _linepoints = [];
         }
     };
-    var _linepoints = [];
     //画单棵树
     var drawTree = function(pointindex) {
         _currentY = _currentY + self.topmargin + self.space;
@@ -73,7 +76,37 @@ var TreeView = function() {
             }
         }
     };
-
+    //获取节点索引
+    this.getPointIndex=function(x,y){
+        
+        for(var item in _data){
+            if(_data[item]['pos']['x']<x && _data[item]['pos']['x']+self.rectangle.width>x){
+                if(_data[item]['pos']['y']<y && _data[item]['pos']['y']+self.rectangle.height>y){
+                    return {'index':item,'action':'selected','message':''};
+                    
+                }
+            }
+        }
+        return false;
+    };
+    //处理点击事件
+    var procClick=function(){
+        $(_container).bind('click',function(){
+            if(self.singlechoice==1) self.selectpoints=[];
+            var x = event.pageX - this.offsetLeft;
+            var y = event.pageY - this.offsetTop+$(_container).scrollTop();
+            var ret=self.getPointIndex(x,y);
+            if(ret){
+                self.selectpoints.push(ret);
+            }
+        });
+    };
+    //点击事件绑定
+    this.onClick=function(func){
+        $(_container).bind('click',function(){
+            func(self.selectpoints);
+        }); 
+    };
     //画线
     var drawLine = function(pointindex ) {
         if (_data[pointindex]['parent']) {
