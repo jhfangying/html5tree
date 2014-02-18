@@ -17,11 +17,11 @@ var TreeView = function() {
     //节点连接的样式
     this.linestyle=1;
     //节点样式
-    this.rectangle = {"width": 40, "height": 20, "strokecolor": "#ffffff", "fillcolor": "#0dd7ff"};
+    this.rectangle = {"width": 40, "height": 20, "strokecolor": "#ffffff", "fillcolor": "#aad7ff","select_strokecolor":'#eeeeee','select_fillcolor':'#0dd7ff'};
     //目前选中的节点
     this.selectpoints=[];
     //单选模式 1单选 2多选
-    this.singlechoice=1;
+    this.singlechoice=2;
     var _container;
     var _canvas;
     var _data;
@@ -53,8 +53,18 @@ var TreeView = function() {
         //end 画图
         procClick();
     };
+    this.refresh=function(){
+    	_currentX = 0;
+    	_currentY = 0;
+	
+        _canvas.clearRect(0, 0, _container.width, _container.height);
+    	//begin 画图
+        drawAllTree(_data);
+        //end 画图
+        // procClick();
+    }
     //画出多棵树
-    var drawAllTree = function(data) {
+    drawAllTree = function(data) {
         for (var i = 0, l = _toppoints.length; i < l; i++) {
             _currentX = self.leftmargin;
             drawTree(_toppoints[i]);
@@ -68,7 +78,6 @@ var TreeView = function() {
             _data[pointindex]['pos'] = {"x": _currentX, "y": _currentY};
         }
         drawLine(pointindex);
-        console.log(pointindex);
         if (_data[pointindex]['children'] != undefined && _data[pointindex]['children'] != '') {
             _currentX = _currentX + self.leftmargin + self.tabspace;
             for (var i = 0, l = _data[pointindex]['children'].length; i < l; i++) {
@@ -78,12 +87,10 @@ var TreeView = function() {
     };
     //获取节点索引
     this.getPointIndex=function(x,y){
-        
         for(var item in _data){
             if(_data[item]['pos']['x']<x && _data[item]['pos']['x']+self.rectangle.width>x){
                 if(_data[item]['pos']['y']<y && _data[item]['pos']['y']+self.rectangle.height>y){
                     return {'index':item,'action':'selected','message':''};
-                    
                 }
             }
         }
@@ -92,12 +99,37 @@ var TreeView = function() {
     //处理点击事件
     var procClick=function(){
         $(_container).bind('click',function(){
-            if(self.singlechoice==1) self.selectpoints=[];
             var x = event.pageX - this.offsetLeft;
             var y = event.pageY - this.offsetTop+$(_container).scrollTop();
             var ret=self.getPointIndex(x,y);
             if(ret){
-                self.selectpoints.push(ret);
+            	if(self.singlechoice==1){
+            		if(self.selectpoints[0]==undefined){
+						self.selectpoints[0]=ret;
+            		}else{
+            			if(self.selectpoints[0]['index']==ret['index']){
+            				self.selectpoints=[];
+            			}else{
+            				self.selectpoints[0]=ret;
+            			}
+            		}
+            	} else{
+            		if(self.selectpoints.length!=0){
+	            		var isselected='';
+	            		for(var i=0,l=self.selectpoints.length;i<l;i++){
+	            			if(self.selectpoints[i]['index']==ret['index']){
+		            			isselected=i;
+		            		}
+	            		}
+	            		if(isselected!==''){
+	            			self.selectpoints.splice(isselected,1);
+	            		}else{
+	            			self.selectpoints.push(ret);
+	            		}
+	            	}else{
+	            		self.selectpoints.push(ret);
+	            	}
+            	}
             }
         });
     };
@@ -131,19 +163,49 @@ var TreeView = function() {
             _canvas.stroke();
         }
     };
+
     var _currentX = 0;
     var _currentY = 0;
 
-    
     //画节点
     var drawPoint = function(pointindex) {
-        _canvas.fillStyle = self.rectangle.fillcolor;
+    	setPointStatus(pointindex);
+        _canvas.fillStyle = _data[pointindex]['selected']==1?self.rectangle.select_fillcolor:self.rectangle.fillcolor;
         _canvas.fillRect(_currentX, _currentY, self.rectangle.width, self.rectangle.height);
         _canvas.fillStyle = "#00f";
         _canvas.font = "italic 16px sans-serif";
         _canvas.textBaseline = "top";
         _canvas.fillText(_data[pointindex]['text'], _currentX, _currentY);
     };
+    //设置节点为选中或者未选中状态
+    var setPointStatus=function(pointindex){
+    	if(self.singlechoice==1){
+    		if(self.selectpoints.length==0){
+    			_data[pointindex]['selected']=2;
+    		}else if(self.selectpoints[0].index!=pointindex){
+    			_data[pointindex]['selected']=2;
+    		}else if(self.selectpoints[0].index==pointindex){
+    			_data[pointindex]['selected']=1;    			
+    		}
+    	}else{
+    		//没有选中的节点
+    		if(self.selectpoints.length==0){
+    			_data[pointindex]['selected']=2;
+    		}else{
+    			_data[pointindex]['selected']=2;
+    			var isselected=false;
+    			for(var i=0,l=self.selectpoints.length;i<l;i++){
+    				if(self.selectpoints[i]['index']==pointindex){
+    					isselected=true;
+    				}
+    			}
+    			if(isselected){
+    				_data[pointindex]['selected']=1;
+    			}
+    		}
+    		
+    	}
+    }
     //处理数据，遍历数据给数据加children字段
     //记录所有顶点索引
     var _procData = function(data) {

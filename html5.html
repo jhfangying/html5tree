@@ -15,7 +15,8 @@
                 var treeViewInstance = new TreeView;
                 treeViewInstance.init({'container': 'canvas', 'data': json});
                 treeViewInstance.onClick(function(points){
-                    alert(points[0].index);
+                	treeViewInstance.refresh();
+                    // alert(points[0].index);
                 });
 
             });
