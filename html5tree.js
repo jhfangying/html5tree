@@ -22,7 +22,6 @@ var TreeView = function() {
     //节点样式
     this.rectangle = {"width": 40, "height": 20, "strokecolor": "#ffffff", "fillcolor": "#aad7ff","select_strokecolor":'#eeeeee','select_fillcolor':'#0dd7ff'};
     //目前选中的节点
-
     this.selectpoints=[];
     //单选模式 1单选 2多选
     this.singlechoice=2;
