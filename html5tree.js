@@ -5,6 +5,8 @@
 *todo:可以改成更简洁的代码
 *todo:文档可以做的更详细
 *todo:增加更多的例子代码
+*todo:增加在一个页面里面显示多个树
+*todo:多个树共用一个json数据
 */
 var TreeView = function() {
 	//树在canvas中的上边距
