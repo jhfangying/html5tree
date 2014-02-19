@@ -27,7 +27,6 @@ var TreeView = function() {
     var _data;
     var _toppoints = [];
     var self;
-
     this.init = function(params) {
         self = this;
         //begin 处理传入参数
@@ -39,7 +38,7 @@ var TreeView = function() {
             _container = params['container'];
         }
         //todo:如果传入的数据是以个数组
-        if (typeof (params['data']) == 'string') {
+        if (typeof (params['data']) === 'string') {
             _data = JSON.parse(params['data']);
         } else {
             _data = params['data'];
@@ -56,12 +55,10 @@ var TreeView = function() {
     this.refresh=function(){
     	_currentX = 0;
     	_currentY = 0;
-	
         _canvas.clearRect(0, 0, _container.width, _container.height);
     	//begin 画图
         drawAllTree(_data);
         //end 画图
-        // procClick();
     }
     //画出多棵树
     drawAllTree = function(data) {
@@ -77,6 +74,7 @@ var TreeView = function() {
         if (!_data[pointindex]['pos']) {
             _data[pointindex]['pos'] = {"x": _currentX, "y": _currentY};
         }
+        //画节点连线
         drawLine(pointindex);
         if (_data[pointindex]['children'] != undefined && _data[pointindex]['children'] != '') {
             _currentX = _currentX + self.leftmargin + self.tabspace;
@@ -102,18 +100,23 @@ var TreeView = function() {
             var x = event.pageX - this.offsetLeft;
             var y = event.pageY - this.offsetTop+$(_container).scrollTop();
             var ret=self.getPointIndex(x,y);
+            //如果点在节点上
             if(ret){
+                //如果是单选模式
             	if(self.singlechoice==1){
             		if(self.selectpoints[0]==undefined){
+                        gotoUrl(ret['index']);
 						self.selectpoints[0]=ret;
             		}else{
             			if(self.selectpoints[0]['index']==ret['index']){
             				self.selectpoints=[];
             			}else{
+                            gotoUrl(ret['index']);
             				self.selectpoints[0]=ret;
             			}
             		}
             	} else{
+                    //多选模式
             		if(self.selectpoints.length!=0){
 	            		var isselected='';
 	            		for(var i=0,l=self.selectpoints.length;i<l;i++){
@@ -124,15 +127,22 @@ var TreeView = function() {
 	            		if(isselected!==''){
 	            			self.selectpoints.splice(isselected,1);
 	            		}else{
+                            gotoUrl(ret['index']);
 	            			self.selectpoints.push(ret);
 	            		}
 	            	}else{
+                        gotoUrl(ret['index']);
 	            		self.selectpoints.push(ret);
 	            	}
             	}
             }
         });
     };
+    var gotoUrl=function(pointindex){
+        if(_data[pointindex]['link']){
+            window.open(_data[pointindex]['link']);
+        }
+    }
     //点击事件绑定
     this.onClick=function(func){
         $(_container).bind('click',function(){
@@ -170,8 +180,16 @@ var TreeView = function() {
     //画节点
     var drawPoint = function(pointindex) {
     	setPointStatus(pointindex);
+        drawRectangle(pointindex);
+        drawText(pointindex);
+    };
+    //画矩形
+    var drawRectangle=function(pointindex){
         _canvas.fillStyle = _data[pointindex]['selected']==1?self.rectangle.select_fillcolor:self.rectangle.fillcolor;
         _canvas.fillRect(_currentX, _currentY, self.rectangle.width, self.rectangle.height);
+    };
+    //画文字
+    var drawText=function(pointindex){
         _canvas.fillStyle = "#00f";
         _canvas.font = "italic 16px sans-serif";
         _canvas.textBaseline = "top";
