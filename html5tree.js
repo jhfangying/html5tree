@@ -6,7 +6,6 @@
 *todo:文档可以做的更详细
 *todo:增加更多的例子代码
 *todo:增加在一个页面里面显示多个树
-*todo:多个树共用一个json数据
 */
 var TreeView = function() {
 	//树在canvas中的上边距
@@ -46,7 +45,7 @@ var TreeView = function() {
         if (typeof (params['data']) === 'string') {
             _data = JSON.parse(params['data']);
         } else {
-            _data = params['data'];
+            _data = clone(params['data']);
         }
         _canvas = _container.getContext("2d");
         _procData(_data);
@@ -262,3 +261,36 @@ var TreeView = function() {
         return false;
     };
 };
+//clone对象，避免引用对象
+function clone(obj) {
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj)
+        return obj;
+    // Handle Date
+    if (obj instanceof Date) {
+        var copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Handle Array
+    if (obj instanceof Array) {
+        var copy = [];
+        for (var i = 0, len = obj.length; i < len; ++i) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        var copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr))
+                copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+
+    throw new Error("Unable to copy obj! Its type isn't supported.");
+}

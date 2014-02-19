@@ -11,18 +11,6 @@
                 "52ff2291e6d03f680a001f0d": {"_id": "52ff2291e6d03f680a001f0d", "text": "2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
                 "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "3", "link":"http://www.fangtianyu.net","children": [], "parent": "52ff228fe6d03f680a00675f"}
             };
-            var json2 = {"52fef673e6d03f700a00458f": {"_id": "52fef673e6d03f700a00458f", "text": "4","link":"http://www.fyhome.com.cn"},
-                "52fefb2de6d03f700a000588": {"_id": "52fefb2de6d03f700a000588", "text": "1","link":"http://www.baidu.com", "children": [], "parent": "52fef673e6d03f700a00458f"},
-                "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "5"},
-                "52ff2291e6d03f680a001f0d": {"_id": "52ff2291e6d03f680a001f0d", "text": "2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-                "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "3", "link":"http://www.fangtianyu.net","children": [], "parent": "52ff228fe6d03f680a00675f"}
-            };
-            var json3 = {"52fef673e6d03f700a00458f": {"_id": "52fef673e6d03f700a00458f", "text": "4","link":"http://www.fyhome.com.cn"},
-                "52fefb2de6d03f700a000588": {"_id": "52fefb2de6d03f700a000588", "text": "1","link":"http://www.baidu.com", "children": [], "parent": "52fef673e6d03f700a00458f"},
-                "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "5"},
-                "52ff2291e6d03f680a001f0d": {"_id": "52ff2291e6d03f680a001f0d", "text": "2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-                "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "3", "link":"http://www.fangtianyu.net","children": [], "parent": "52ff228fe6d03f680a00675f"}
-            };
             $(document).ready(function() {
                 var treeViewInstance = new TreeView;
                 treeViewInstance.linestyle=1;
@@ -31,13 +19,13 @@
 
                 var treeViewInstance2 = new TreeView;
                 treeViewInstance2.linestyle=2;
-                treeViewInstance2.init({'container': 'canvas2', 'data': json2});
+                treeViewInstance2.init({'container': 'canvas2', 'data': json});
 
                 treeViewInstance2.onClick();
 
                 var treeViewInstance3 = new TreeView;
                 treeViewInstance3.linestyle=3;
-                treeViewInstance3.init({'container': 'canvas3', 'data': json3});
+                treeViewInstance3.init({'container': 'canvas3', 'data': json});
                 treeViewInstance3.onClick();
 
             });
