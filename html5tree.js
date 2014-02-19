@@ -1,11 +1,10 @@
 /*
 *Html5tree是基于canvas的一个树控件
-*version 0.5
+*version 0.6
 *todo:这个控件还需要更好的美观设置
 *todo:可以改成更简洁的代码
 *todo:文档可以做的更详细
 *todo:增加更多的例子代码
-*todo:增加在一个页面里面显示多个树
 */
 var TreeView = function() {
 	//树在canvas中的上边距
@@ -65,7 +64,7 @@ var TreeView = function() {
         //end 画图
     }
     //画出多棵树
-    drawAllTree = function(data) {
+    var drawAllTree = function(data) {
         for (var i = 0, l = _toppoints.length; i < l; i++) {
             _currentX = self.leftmargin;
             drawTree(_toppoints[i]);
