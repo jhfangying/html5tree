@@ -1,7 +1,10 @@
 /*
 *Html5tree是基于canvas的一个树控件
-*version 0.1
-*todo:选择节点的功能尚未完成
+*version 0.5
+*todo:这个控件还需要更好的美观设置
+*todo:可以改成更简洁的代码
+*todo:文档可以做的更详细
+*todo:增加更多的例子代码
 */
 var TreeView = function() {
 	//树在canvas中的上边距
@@ -19,6 +22,7 @@ var TreeView = function() {
     //节点样式
     this.rectangle = {"width": 40, "height": 20, "strokecolor": "#ffffff", "fillcolor": "#aad7ff","select_strokecolor":'#eeeeee','select_fillcolor':'#0dd7ff'};
     //目前选中的节点
+
     this.selectpoints=[];
     //单选模式 1单选 2多选
     this.singlechoice=2;
@@ -52,7 +56,7 @@ var TreeView = function() {
         //end 画图
         procClick();
     };
-    this.refresh=function(){
+    var refresh=function(){
     	_currentX = 0;
     	_currentY = 0;
         _canvas.clearRect(0, 0, _container.width, _container.height);
@@ -146,7 +150,10 @@ var TreeView = function() {
     //点击事件绑定
     this.onClick=function(func){
         $(_container).bind('click',function(){
-            func(self.selectpoints);
+        	refresh();
+        	if(typeof(func)=='function'){
+        		func(self.selectpoints);
+        	}
         }); 
     };
     //画线
