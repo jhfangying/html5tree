@@ -1,6 +1,6 @@
 /*
 *Html5tree是基于canvas的一个树控件
-*version 0.6
+*version 0.6.1
 *todo:这个控件还需要更好的美观设置
 *todo:可以改成更简洁的代码
 *todo:文档可以做的更详细
@@ -49,7 +49,6 @@ var TreeView = function() {
         _canvas = _container.getContext("2d");
         _procData(_data);
         //end 处理传入参数
-
         //begin 画图
         drawAllTree(_data);
         //end 画图
@@ -138,6 +137,7 @@ var TreeView = function() {
 	            		self.selectpoints.push(ret);
 	            	}
             	}
+                refresh();
             }
         });
     };
@@ -149,7 +149,7 @@ var TreeView = function() {
     //点击事件绑定
     this.onClick=function(func){
         $(_container).bind('click',function(){
-        	refresh();
+        	
         	if(typeof(func)=='function'){
         		func(self.selectpoints);
         	}
@@ -241,7 +241,7 @@ var TreeView = function() {
                 _toppoints.push(item);
             }
         }
-
+        _toppoints=_quickSortPoints(_toppoints);
     };
     //计算Children字段的值
     var setChildren = function(pointsindex) {
@@ -250,6 +250,7 @@ var TreeView = function() {
                 _data[_data[pointsindex]['parent']]['children'] = [];
             }
             _data[_data[pointsindex]['parent']]['children'].push(pointsindex);
+            _data[_data[pointsindex]['parent']]['children']=_quickSortPoints(_data[_data[pointsindex]['parent']]['children']);
         }
     };
     //获取所有顶点的索引值
@@ -258,6 +259,22 @@ var TreeView = function() {
             return true;
         }
         return false;
+    };
+    //把节点按照 orderno 从小到大排序
+    var _quickSortPoints=function(points){
+        var length=points.length;
+        if(length<=1)return points;
+        var pindex=Math.floor(length/2);
+        var point=points.splice(pindex,1)[0];
+        var left=[],right=[];
+        for(var i=0;i<points.length;i++){
+            if(_data[points[i]]['orderno'] <_data[point]['orderno']){
+                left.push(points[i]);
+            }else{
+                right.push(points[i]);
+            }
+        }
+        return _quickSortPoints(left).concat([point],_quickSortPoints(right));
     };
 };
 //clone对象，避免引用对象
