@@ -266,8 +266,11 @@ var TreeView = function() {
         if(length<=1)return points;
         var pindex=Math.floor(length/2);
         var point=points.splice(pindex,1)[0];
+        if(!_data[point]['orderno'])_data[point]['orderno']=999999;
         var left=[],right=[];
         for(var i=0;i<points.length;i++){
+            if(!_data[points[i]]['orderno'])_data[points[i]]['orderno']=999999;
+
             if(_data[points[i]]['orderno'] <_data[point]['orderno']){
                 left.push(points[i]);
             }else{
