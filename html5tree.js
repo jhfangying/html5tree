@@ -6,6 +6,8 @@
 *todo:文档可以做的更详细
 *todo:增加更多的例子代码
 *todo:增加对节点内容的自动换行支持
+*todo:增加对节点拖拽的支持
+*todo:增加拖拽中的节点的显示样式，半透明，虚线框线
 */
 var TreeView = function() {
 	//树在canvas中的上边距
@@ -198,16 +200,15 @@ var TreeView = function() {
     };
     Array.prototype.min = function() {
       return Math.min.apply({},this);
-    }
+    };
     Array.prototype.inarray=function(element){
         for(var i=0,l=this.length;i<l;i++){
             if(this[i]==element)return i;
         }
         return false;
-    }
+    };
     //设置节点的位置
     var setPoint=function(point,x,y){
-
         var currentlevel=point['level'];
         for(var i=1,l=_treelevelmap.length;i<l;i++){
             if(x+self.rectangle.width/2<=_treelevelmap[i]){
