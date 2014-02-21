@@ -67,7 +67,6 @@ var TreeView = function() {
         drawAllTree(_data);
         //end 画图
     }
-    var _treelevel=0;
     // var map={'posx':{},'posy':{}};
     var _treelevelmap=[];
     //画出多棵树
@@ -85,7 +84,8 @@ var TreeView = function() {
             _data[pointindex]['level']= _data[_data[pointindex]['parent']]['level']+1;
         }
         _currentY = _currentY + self.topmargin + self.space;
-        _data[pointindex]['pos'] = {"x": _currentX + self.leftmargin + self.tabspace* _data[pointindex]['level'], "y": _currentY};
+        _data[pointindex]['pos'] = {"x":  self.leftmargin + self.tabspace* _data[pointindex]['level'], "y": _currentY};
+        _treelevelmap[_data[pointindex]['level']]=_data[pointindex]['pos']['x'];
         drawPoint(pointindex,false);
         //画节点连线
         drawLine(pointindex);
@@ -207,7 +207,7 @@ var TreeView = function() {
     }
     //设置节点的位置
     var setPoint=function(point,x,y){
-        
+
         var currentlevel=point['level'];
         for(var i=1,l=_treelevelmap.length;i<l;i++){
             if(x+self.rectangle.width/2<=_treelevelmap[i]){
@@ -215,6 +215,7 @@ var TreeView = function() {
                 break
             }
         }
+
         var pindex_top='';
         var distance_top=1000000;
         for(var index in _data){
