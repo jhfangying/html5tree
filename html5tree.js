@@ -94,7 +94,7 @@ var TreeView = function() {
     var procAllTree = function(data) {
         for (var i = 0, l = _toppoints.length; i < l; i++) {
             _currentX = self.leftmargin;
-            
+
             procTree(_toppoints[i]);
         }
     };
@@ -105,7 +105,7 @@ var TreeView = function() {
         } else {
             _data[pointindex]['level'] = _data[_data[pointindex]['parent']]['level'] + 1;
         }
-        if(_currentY===0){
+        if (_currentY === 0) {
             _currentY = self.topmargin;
         }
         _currentY = _currentY + self.space;
@@ -146,11 +146,11 @@ var TreeView = function() {
                 var x = event.pageX - this.offsetLeft;
                 var y = event.pageY - this.offsetTop + $(_container).scrollTop();
                 dragpoint = clone(_data[_capturepoint['index']]);
-                _data[_capturepoint['index']]['alpha']=0.5;
+                _data[_capturepoint['index']]['alpha'] = 0.5;
                 dragpoint['pos'] = {'x': x - self.rectangle.width / 2, 'y': y - self.rectangle.height / 2};
                 setPoint(_capturepoint['index'], x, y);
                 refresh();
-                _canvas.globalAlpha =0.5;
+                _canvas.globalAlpha = 0.5;
                 _drawPoint(dragpoint, false);
                 _canvas.globalAlpha = 1;
 //                showRange(x, y);
@@ -161,7 +161,7 @@ var TreeView = function() {
                 var x = event.pageX - this.offsetLeft;
                 var y = event.pageY - this.offsetTop + $(_container).scrollTop();
                 setPoint(_capturepoint['index'], x, y);
-                _data[_capturepoint['index']]['alpha']=1;
+                _data[_capturepoint['index']]['alpha'] = 1;
                 _capturepoint = '';
                 refresh();
             }
@@ -225,15 +225,29 @@ var TreeView = function() {
             }
         });
     };
+    var isParentPoint = function(parent, son) {
+        var parents =''; //getParents(son, '');
+        
+        var getParents = function(pointindex) {
+            if (_data[pointindex]['parent'] == undefined || _data[pointindex]['parent'] == '')
+                return;
+            parents = _data[pointindex]['parent'] + ',' + parents;
+            getParents(_data[_data[pointindex]['parent']]['_id'], parents);
+        };
+        getParents(son);
+//        alert(parents);
+        if (parents.indexOf(parent) !== -1)
+            return true;
+        return false;
+    };
 
     //设置节点的位置
     var setPoint = function(pointindex, x, y) {
         var index = getNearestPoint(x, y);
-        
         if (index === false)
             return;
         //如果移动的节点是最近的节点的父节点，那就不相应这个移动操作
-        if(_data[index]['parent']==pointindex){
+        if (isParentPoint(pointindex,index)) {
             return;
         }
         var nearestpoint = _data[index];
@@ -335,9 +349,6 @@ var TreeView = function() {
         }
     };
 
-
-
-
     //设置节点为选中或者未选中状态
     var setPointStatus = function(pointindex) {
         if (self.singlechoice == 1) {
@@ -370,7 +381,7 @@ var TreeView = function() {
     //处理数据，遍历数据给数据加children字段
     //记录所有顶点索引
     var _procData = function(data) {
-        for(var item in data){
+        for (var item in data) {
             data[item]['children'] = [];
         }
         for (var item in data) {
@@ -475,14 +486,14 @@ var TreeView = function() {
     };
     //画矩形
     var _drawRectangle = function(point) {
-        if(point['alpha']<1){
+        if (point['alpha'] < 1) {
             _canvas.strokeStyle = '#000000';
             _canvas.strokeRect(point['pos']['x'], point['pos']['y'], self.rectangle.width, self.rectangle.height);
-            _canvas.globalAlpha=point['alpha'];
+            _canvas.globalAlpha = point['alpha'];
         }
         _canvas.fillStyle = point['selected'] == 1 ? self.rectangle.select_fillcolor : self.rectangle.fillcolor;
         _canvas.fillRect(point['pos']['x'], point['pos']['y'], self.rectangle.width, self.rectangle.height);
-        _canvas.globalAlpha=1;
+        _canvas.globalAlpha = 1;
     };
     //画文字
     var _drawText = function(point) {
