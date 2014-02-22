@@ -6,6 +6,7 @@
  *todo:文档可以做的更详细
  *todo:增加更多的例子代码
  *todo:增加对节点内容的自动换行支持
+ *todo:增加对拖拽操作的数据返回
  */
 var TreeView = function() {
     //树在canvas中的上边距
