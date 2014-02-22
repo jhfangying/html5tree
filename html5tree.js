@@ -6,8 +6,6 @@
  *todo:文档可以做的更详细
  *todo:增加更多的例子代码
  *todo:增加对节点内容的自动换行支持
- *todo:增加对节点拖拽的支持
- *todo:增加拖拽中的节点的显示样式，半透明，虚线框线
  */
 var TreeView = function() {
     //树在canvas中的上边距
@@ -367,7 +365,7 @@ var TreeView = function() {
             }
 
         }
-    }
+    };
     //处理数据，遍历数据给数据加children字段
     //记录所有顶点索引
     var _procData = function(data) {

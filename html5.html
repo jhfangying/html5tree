@@ -6,23 +6,16 @@
         <script type='text/javascript' src='./html5tree.js'></script>
         <script type="text/javascript">
             var json = {
-                // "52fef673e6d03f700a00458f": {"_id": "52fef673e6d03f700a00458f", "orderno":10,"text": "4","link":"http://www.fyhome.com.cn"},
-                // "52fefb2de6d03f700a000588": {"_id": "52fefb2de6d03f700a000588","orderno":2, "text": "1","link":"http://www.baidu.com", "children": [], "parent": "52fef673e6d03f700a00458f"},
                 "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "5"},
-//                "52ff2291e6d03f680a001f0d": {"_id": "52ff2291e6d03f680a001f0d","orderno":5, "text": "2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-//                "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "3","orderno":4,"children": [], "parent": "52ff228fe6d03f680a00675f"},
-//                "52ff2291e6d03f680a001f0e": {"_id": "52ff2291e6d03f680a001f0e", "text": "6", "children": [], "parent": "52ff2291e6d03f680a001f0c"},
+                "52ff2291e6d03f680a001f0d": {"_id": "52ff2291e6d03f680a001f0d","orderno":5, "text": "2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
+                "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "3","orderno":4,"children": [], "parent": "52ff228fe6d03f680a00675f"},
+                "52ff2291e6d03f680a001f0e": {"_id": "52ff2291e6d03f680a001f0e", "text": "6", "children": [], "parent": "52ff2291e6d03f680a001f0c"},
                 "52ff2291e6d03f680a001f0f": {"_id": "52ff2291e6d03f680a001f0f", "text": "7", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-//                "52ff2291e6d03f680a001f10": {"_id": "52ff2291e6d03f680a001f10", "text": "8","children": [], "parent": "52ff2291e6d03f680a001f0d"},
             };
-            
-//            var json={"52ff228fe6d03f680a00675f":{"_id": "52ff228fe6d03f680a00675f",orderno: 2,"text": "5"},
-//                "52ff2291e6d03f680a001f0d":{'_id': "52ff2291e6d03f680a001f0d","orderno": 1,"text": "2"}};
             $(document).ready(function() {
                 var treeViewInstance = new TreeView;
                 treeViewInstance.linestyle=1;
                 treeViewInstance.init({'container': 'canvas', 'data': json});
-
             });
         </script>
     </head>
