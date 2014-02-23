@@ -16,6 +16,9 @@
                 var treeViewInstance = new TreeView;
                 treeViewInstance.linestyle=1;
                 treeViewInstance.init({'container': 'canvas', 'data': json});
+                treeViewInstance.onMouseUp(function(data){
+                    // alert(data);
+                });
             });
         </script>
     </head>

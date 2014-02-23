@@ -1,12 +1,11 @@
 /*
  *Html5tree是基于canvas的一个树控件
- *version 0.6.1
+ *version 0.7
  *todo:这个控件还需要更好的美观设置
  *todo:可以改成更简洁的代码
  *todo:文档可以做的更详细
  *todo:增加更多的例子代码
  *todo:增加对节点内容的自动换行支持
- *todo:增加对拖拽操作的数据返回
  */
 var TreeView = function() {
     //树在canvas中的上边距
@@ -32,6 +31,7 @@ var TreeView = function() {
     var _data;
     var _toppoints, _capturepoint, _currentX, _currentY;
     _capturepoint = '';
+    _lastcapturepoint ='';
     //重置过程中的参数值
     var _resetParams = function() {
         _toppoints = [];
@@ -136,6 +136,7 @@ var TreeView = function() {
             var x = event.pageX - this.offsetLeft;
             var y = event.pageY - this.offsetTop + $(_container).scrollTop();
             var ret = self.getPointIndex(x, y);
+            _lastcapturepoint='';
             if (ret) {
                 _capturepoint = ret;
             }
@@ -162,8 +163,11 @@ var TreeView = function() {
                 var y = event.pageY - this.offsetTop + $(_container).scrollTop();
                 setPoint(_capturepoint['index'], x, y);
                 _data[_capturepoint['index']]['alpha'] = 1;
-                _capturepoint = '';
+                _lastcapturepoint=_capturepoint;
+                _capturepoint = ''; 
                 refresh();
+                _lastcapturepoint['action']='drop';
+                _lastcapturepoint['message']=_data[_lastcapturepoint['index']]['parent'];
             }
         });
     };
@@ -225,6 +229,15 @@ var TreeView = function() {
             }
         });
     };
+    //目标弹起绑定
+    this.onMouseUp=function(func){
+        $(_container).bind('mouseup', function() {
+            if (typeof (func) == 'function') {
+                // alert(_lastcapturepoint);
+                func(_lastcapturepoint);
+            }
+        });
+    }
     var isParentPoint = function(parent, son) {
         var parents =''; //getParents(son, '');
         
@@ -235,7 +248,6 @@ var TreeView = function() {
             getParents(_data[_data[pointindex]['parent']]['_id'], parents);
         };
         getParents(son);
-//        alert(parents);
         if (parents.indexOf(parent) !== -1)
             return true;
         return false;
