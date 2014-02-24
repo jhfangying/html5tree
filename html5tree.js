@@ -27,21 +27,21 @@ var TreeView = function() {
     //每一级树的缩进
     this.tabspace = 60;
     //上下2个节点间的间距
-    this.space = 50;
+    this.space = 10;
     //节点间连线颜色
     this.linecolor = "#000000";
     //节点连接的样式
     this.linestyle = 1;
     //节点样式
-    this.rectangle = {"width": 40, "height": 20, "strokecolor": "#ffffff", "fillcolor": "#aad7ff", "select_strokecolor": '#eeeeee', 'select_fillcolor': '#0dd7ff'};
+    this.rectangle = {"width": 40, "height": 20, fontsize: 16, "strokecolor": "#ffffff", "fillcolor": "#aad7ff", "select_strokecolor": '#eeeeee', 'select_fillcolor': '#0dd7ff'};
     //目前选中的节点
     var _selectpoints = [];
     //单选模式 1单选 2多选
     this.singlechoice = 2;
     //删除按钮控制
-    this.deletealert="确认要删除吗？";
+    this.deletealert = "确认要删除吗？";
     //1表示可以删除有子节点的节点，2表示不能删除有子节点的节点
-    this.deletechildren=1;
+    this.deletechildren = 1;
     var _container;
     var _canvas;
     var _data;
@@ -161,17 +161,18 @@ var TreeView = function() {
         if (_data[pointindex]['parent'] && (_data[_data[pointindex]['parent']]['folder'] == 2 || _data[_data[pointindex]['parent']]['draw'] == 2)) {
             draw = 2;
         }
-        //如果delete =1，那他的子节点也是delete=1，并且
-
-
         if (draw == 2) {
             _data[pointindex]['draw'] = 2;
         } else {
-            _currentY = _currentY + self.space;
+            //文字换行处理
+            var words = new WordWrap(_data[pointindex]['text'], self.rectangle.fontsize, self.rectangle.width);
+            _data[pointindex]['height'] = self.rectangle.height > words.rows * self.rectangle.fontsize ? self.rectangle.height : words.rows * self.rectangle.fontsize;
+            _data[pointindex]['wrapwords'] = words.lines;
             _data[pointindex]['pos'] = {"x": _currentX + self.tabspace * _data[pointindex]['level'], "y": _currentY};
+            _currentY = _currentY + _data[pointindex]['height'] + self.space;
             _data[pointindex]['draw'] = 1;
             _maxX = _maxX < _data[pointindex]['pos']['x'] + self.rectangle.width ? (_data[pointindex]['pos']['x'] + self.rectangle.width) : _maxX;
-            _maxY = _maxY < _data[pointindex]['pos']['y'] + self.rectangle.height ? (_data[pointindex]['pos']['y'] + self.rectangle.height) : _maxY;
+            _maxY = _maxY < _data[pointindex]['pos']['y'] + _data[pointindex]['height'] ? (_data[pointindex]['pos']['y'] + _data[pointindex]['height']) : _maxY;
         }
         //处理子节点
         if (_data[pointindex]['children'] != undefined && _data[pointindex]['children'] != '') {
@@ -182,42 +183,81 @@ var TreeView = function() {
     };
     //获取节点索引
     var getPointIndex = function(x, y) {
+        var area = false;
         for (var item in _data) {
-            if (_data[item]['pos']['x'] < x && _data[item]['pos']['x'] + self.rectangle.width > x) {
-                if (_data[item]['pos']['y'] < y && _data[item]['pos']['y'] + self.rectangle.height > y) {
-                    if (_data[item]['draw'] == 2)
-                        return false;
-                    return {'index': item, 'action': 'selected', 'message': ''};
-                }
-            }
+            area = hotArea(item, 'point');
+            if (!inHotArea(area, x, y))
+                continue;
+            if (_data[item]['draw'] == 2)
+                return false;
+            return {'index': item, 'action': 'selected', 'message': ''};
         }
         return false;
     };
     var getPointControllerIndex = function(x, y) {
+        var area = false;
         for (var item in _data) {
-            if (_data[item]['pos']['x'] - _controller_width < x && _data[item]['pos']['x'] > x) {
-                if (_data[item]['pos']['y'] + (self.rectangle.height - _controller_height) / 2 < y && _data[item]['pos']['y'] + (self.rectangle.height + _controller_height) / 2 > y) {
-                    if (_data[item]['draw'] == 2)
-                        return false;
-                    return {'index': item, 'action': 'folder', 'message': ''};
-                }
-            }
+            area = hotArea(item, 'controller');
+            if (!inHotArea(area, x, y))
+                continue;
+            if (_data[item]['draw'] == 2)
+                return false;
+            return {'index': item, 'action': 'folder', 'message': ''};
         }
+        return false;
+    };
+    //获取点击删除按钮时的节点id
+    var getPointDeleteButtonIndex = function(x, y) {
+        var area = false;
+        for (var item in _data) {
+            area = hotArea(item, 'deletebutton');
+            if (!inHotArea(area, x, y))
+                continue;
+            if (_data[item]['draw'] == 2)
+                return false;
+            return {'index': item, 'action': 'delete', 'message': ''};
+        }
+        return false;
+    };
+    //判断鼠标坐标是否落在热区内
+    var inHotArea = function(area, x, y) {
+        if (!area)
+            return false;
+        if (area['left'] < x && area['right'] > x && area['top'] < y && area['bottom'] > y)
+            return true;
         return false;
     };
 
-    var getPointDeleteButtonIndex = function(x, y) {
-        for (var item in _data) {
-            if (_data[item]['pos']['x'] + self.rectangle.width < x && _data[item]['pos']['x'] + self.rectangle.width + _button_width > x) {
-                if (_data[item]['pos']['y'] + (self.rectangle.height - _button_height) / 2 < y && _data[item]['pos']['y'] + (self.rectangle.height + _button_height) / 2 > y) {
-                    if (_data[item]['draw'] == 2)
-                        return false;
-                    return {'index': item, 'action': 'delete', 'message': ''};
-                }
-            }
+    //节点各个部分的热区范围
+    var hotArea = function(pointindex, type) {
+        var area = false;
+        if (type === 'point') {
+            area = {
+                'left': _data[pointindex]['pos']['x'],
+                'right': _data[pointindex]['pos']['x'] + self.rectangle.width,
+                'top': _data[pointindex]['pos']['y'],
+                'bottom': _data[pointindex]['pos']['y'] + _data[pointindex]['height']
+            };
         }
-        return false;
+        if (type === 'controller') {
+            area = {
+                'left': _data[pointindex]['pos']['x'] - _controller_width,
+                'right': _data[pointindex]['pos']['x'],
+                'top': _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] - _controller_height) / 2,
+                'bottom': _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] + _controller_height) / 2
+            };
+        }
+        if (type === 'deletebutton') {
+            area = {
+                'left': _data[pointindex]['pos']['x'] + self.rectangle.width,
+                'right': _data[pointindex]['pos']['x'] + self.rectangle.width + _button_width,
+                'top': _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] - _button_height) / 2,
+                'bottom': _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] + _button_height) / 2
+            };
+        }
+        return area;
     };
+    //处理数据拖拽
     var procDragAndDrop = function() {
         var dragpoint = {};
         $(_container).bind('mousedown', function() {
@@ -229,14 +269,13 @@ var TreeView = function() {
                 _capturepoint = ret;
             }
         });
-
         $(_container).bind('mousemove', function() {
             if (_capturepoint) {
                 var x = event.pageX - this.offsetLeft + $(_container).parent().scrollLeft();
                 var y = event.pageY - this.offsetTop + $(_container).parent().scrollTop();
                 dragpoint = clone(_data[_capturepoint['index']]);
                 _data[_capturepoint['index']]['alpha'] = 0.5;
-                dragpoint['pos'] = {'x': x - self.rectangle.width / 2, 'y': y - self.rectangle.height / 2};
+                dragpoint['pos'] = {'x': x - self.rectangle.width / 2, 'y': y - dragpoint['height'] / 2};
                 setPoint(_capturepoint['index'], x, y);
                 refresh();
                 _canvas.globalAlpha = 0.5;
@@ -315,7 +354,7 @@ var TreeView = function() {
             }
             ret = getPointDeleteButtonIndex(x, y);
             if (ret) {
-                if(confirm(self.deletealert)){
+                if (confirm(self.deletealert)) {
                     deleteTree(ret['index']);
                 }
             }
@@ -323,7 +362,7 @@ var TreeView = function() {
         });
     };
     //删除树
-    var deleteTree=function(pointindex){
+    var deleteTree = function(pointindex) {
         //处理子节点
         if (_data[pointindex]['children'] != undefined && _data[pointindex]['children'] != '') {
             for (var i = 0, l = _data[pointindex]['children'].length; i < l; i++) {
@@ -341,7 +380,7 @@ var TreeView = function() {
     this.onClick = function(func) {
         $(_container).bind('click', function() {
             if (typeof (func) === 'function') {
-                func({'select':_selectpoints,'delete':_deletepoint});
+                func({'select': _selectpoints, 'delete': _deletepoint});
             }
         });
     };
@@ -392,13 +431,13 @@ var TreeView = function() {
             return;
         }
         //如果鼠标在节点下方，左右都不超出半个节点宽度，下方超出半个节点高度
-        if (y - nearestpoint['pos']['y'] > self.rectangle.height / 2) {
+        if (y - nearestpoint['pos']['y'] > _data[pointindex]['height'] / 2) {
             _data[pointindex]['parent'] = nearestpoint['parent'];
             _data[pointindex]['orderno'] = nearestpoint['orderno'] + 0.5;
             return;
         }
         //如果鼠标在节点上方，左右都不超出半个节点宽度，上方超出半个节点高度
-        if (nearestpoint['pos']['y'] - y > self.rectangle.height / 2) {
+        if (nearestpoint['pos']['y'] - y > _data[pointindex]['height'] / 2) {
             _data[pointindex]['parent'] = nearestpoint['parent'];
             _data[pointindex]['orderno'] = nearestpoint['orderno'] - 0.5;
             return;
@@ -440,7 +479,7 @@ var TreeView = function() {
         var nearpoints = [];
         var distance = false;
         for (var item in _data) {
-            distance = rectangleOverCircle(_data[item]['pos']['x'], _data[item]['pos']['y'], self.rectangle.width, self.rectangle.height, x, y, self.r);
+            distance = rectangleOverCircle(_data[item]['pos']['x'], _data[item]['pos']['y'], self.rectangle.width, _data[item]['height'], x, y, self.r);
             if (distance !== false) {
                 nearpoints.push({'index': item, 'distance': distance});
             }
@@ -501,7 +540,6 @@ var TreeView = function() {
                     _data[pointindex]['selected'] = 1;
                 }
             }
-
         }
     };
     //处理数据，遍历数据给数据加children字段
@@ -589,20 +627,20 @@ var TreeView = function() {
         if (_data[pointindex]['parent']) {
             _canvas.beginPath();
             if (self.linestyle == 2) {
-                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] + self.rectangle.width - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2 + _controller_height / 2);
-                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] + self.rectangle.width - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] +  _data[_data[pointindex]['parent']]['height'] / 2 + _controller_height / 2);
+                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
                 _canvas.strokeStyle = self.linecolor;
             } else if (self.linestyle == 3) {
-                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2 + self.rectangle.width, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2 + _controller_height / 2);
+                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2 + self.rectangle.width, _data[_data[pointindex]['parent']]['pos']['y'] + _data[pointindex]['height'] / 2 + _controller_height / 2);
                 var tab = _data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2 + self.rectangle.width + (self.tabspace - self.rectangle.width) / 2;
-                _canvas.lineTo(tab, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2);
-                _canvas.lineTo(tab, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
-                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+                _canvas.lineTo(tab, _data[_data[pointindex]['parent']]['pos']['y'] + _data[pointindex]['height'] / 2);
+                _canvas.lineTo(tab, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
+                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
                 _canvas.strokeStyle = self.linecolor;
             } else {
-                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2 + _controller_height / 2);
-                _canvas.lineTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
-                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] +  _data[_data[pointindex]['parent']]['height'] / 2 + _controller_height / 2);
+                _canvas.lineTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
+                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
                 _canvas.strokeStyle = self.linecolor;
             }
             _canvas.stroke();
@@ -610,34 +648,36 @@ var TreeView = function() {
 
         }
     };
-
+    //画出节点收缩和展开的符号
     var _drawController = function(pointindex) {
         _canvas.fillStyle = _controller_color;
-        _canvas.fillRect(_data[pointindex]['pos']['x'] - _controller_width, _data[pointindex]['pos']['y'] + (self.rectangle.height - _controller_height) / 2, _controller_width, _controller_height);
+        _canvas.fillRect(_data[pointindex]['pos']['x'] - _controller_width, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] - _controller_height) / 2, _controller_width, _controller_height);
         _canvas.strokeStyle = _controller_content_color;
         _canvas.beginPath();
-        _canvas.moveTo(_data[pointindex]['pos']['x'] - _controller_width, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
-        _canvas.lineTo(_data[pointindex]['pos']['x'], _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+        _canvas.moveTo(_data[pointindex]['pos']['x'] - _controller_width, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
+        _canvas.lineTo(_data[pointindex]['pos']['x'], _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
         //如果节点有子节点，并且子节点是不显示的
         if (_data[pointindex]['children'] && _data[pointindex]['children'] != '' && _data[pointindex]['folder'] && _data[pointindex]['folder'] == 2) {
-            _canvas.moveTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + (self.rectangle.height - _controller_height) / 2);
-            _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + (self.rectangle.height + _controller_height) / 2);
+            _canvas.moveTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] - _controller_height) / 2);
+            _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] + _controller_height) / 2);
         }
         _canvas.closePath();
         _canvas.stroke();
     };
 
-
+//    CanvasRenderingContext2D.prototype.lineTo=function(){
+////        alert(1);
+//    };
 
     var _drawDeleteButton = function(pointindex) {
         _canvas.fillStyle = _button_color;
-        _canvas.fillRect(_data[pointindex]['pos']['x'] + self.rectangle.width, _data[pointindex]['pos']['y'] + (self.rectangle.height - _button_height) / 2, _button_width, _button_height);
+        _canvas.fillRect(_data[pointindex]['pos']['x'] + self.rectangle.width, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] - _button_height) / 2, _button_width, _button_height);
         _canvas.strokeStyle = _button_content_color;
         _canvas.beginPath();
-        _canvas.moveTo(_data[pointindex]['pos']['x'] + self.rectangle.width, _data[pointindex]['pos']['y'] + (self.rectangle.height - _button_height) / 2);
-        _canvas.lineTo(_data[pointindex]['pos']['x'] + self.rectangle.width + _button_width, _data[pointindex]['pos']['y'] + (self.rectangle.height + _button_height) / 2);
-        _canvas.moveTo(_data[pointindex]['pos']['x'] + self.rectangle.width + _button_width, _data[pointindex]['pos']['y'] + (self.rectangle.height - _button_height) / 2);
-        _canvas.lineTo(_data[pointindex]['pos']['x'] + self.rectangle.width, _data[pointindex]['pos']['y'] + (self.rectangle.height + _button_height) / 2);
+        _canvas.moveTo(_data[pointindex]['pos']['x'] + self.rectangle.width, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] - _button_height) / 2);
+        _canvas.lineTo(_data[pointindex]['pos']['x'] + self.rectangle.width + _button_width, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] + _button_height) / 2);
+        _canvas.moveTo(_data[pointindex]['pos']['x'] + self.rectangle.width + _button_width, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] - _button_height) / 2);
+        _canvas.lineTo(_data[pointindex]['pos']['x'] + self.rectangle.width, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] + _button_height) / 2);
         _canvas.closePath();
         _canvas.stroke();
     };
@@ -656,11 +696,12 @@ var TreeView = function() {
     var _drawRectangle = function(point) {
         if (point['alpha'] < 1) {
             _canvas.strokeStyle = '#000000';
-            _canvas.strokeRect(point['pos']['x'], point['pos']['y'], self.rectangle.width, self.rectangle.height);
+
+            _canvas.strokeRect(point['pos']['x'], point['pos']['y'], self.rectangle.width, point['height']);
             _canvas.globalAlpha = point['alpha'];
         }
         _canvas.fillStyle = point['selected'] == 1 ? self.rectangle.select_fillcolor : self.rectangle.fillcolor;
-        _canvas.fillRect(point['pos']['x'], point['pos']['y'], self.rectangle.width, self.rectangle.height);
+        _canvas.fillRect(point['pos']['x'], point['pos']['y'], self.rectangle.width, point['height']);
         _canvas.globalAlpha = 1;
     };
     //画文字
@@ -668,7 +709,9 @@ var TreeView = function() {
         _canvas.fillStyle = "#00f";
         _canvas.font = "italic 16px sans-serif";
         _canvas.textBaseline = "top";
-        _canvas.fillText(point['text'], point['pos']['x'], point['pos']['y']);
+        for (var i = 0, l = point['wrapwords'].length; i < l; i++) {
+            _canvas.fillText(point['wrapwords'][i], point['pos']['x'], point['pos']['y'] + i * self.rectangle.fontsize);
+        }
     };
     Array.prototype.min = function() {
         return Math.min.apply({}, this);
