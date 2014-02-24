@@ -5,7 +5,7 @@
  *todo:可以改成更简洁的代码
  *todo:文档可以做的更详细
  *todo:增加更多的例子代码
- *todo:增加对节点内容的自动换行支持
+ *todo:增加一些控件的可设置项
  *功能：
  *支持自定义节点的样式（颜色，宽度，高度，缩进，间距）
  *支持拖拽节点，改变的节点的顺序和父子关系
@@ -18,6 +18,7 @@
  *支持不同canvas上的tree不可以互动
  *支持自适应画布大小
  *支持删除节点操作
+ *支持节点固定宽度，文字超出宽度自动换行，自动拉长节点高度
  */
 var TreeView = function() {
     //树在canvas中的上边距
@@ -52,7 +53,8 @@ var TreeView = function() {
     var _controller_height = 10;
     var _controller_color = '#000000'
     var _controller_content_color = '#ffffff';
-
+    //拖拽相关参数
+    var _dragpoint = {};
     var _capturepoint = '';
     var _lastcapturepoint = '';
     //画布的尺寸
@@ -99,14 +101,14 @@ var TreeView = function() {
         //begin 画图
         procAllTree(_data);
         //end 画图
-        render();
         //处理点击事件
         procClick();
         //处理拖拽事件
         procDragAndDrop();
+        render();
     };
 
-    //重置参数，刷新canvas
+    //重置参数，刷新树上的数据
     var refresh = function() {
         _resetParams();
         _canvas.clearRect(0, 0, _container.width, _container.height);
@@ -114,7 +116,6 @@ var TreeView = function() {
         //begin 画图
         procAllTree(_data);
         //end 画图
-        render();
     };
 
     //渲染整个图
@@ -131,6 +132,13 @@ var TreeView = function() {
                 _drawDeleteButton(item);
             }
         }
+        if (_dragpoint['_id']) {
+            _canvas.globalAlpha = 0.5;
+            _drawPoint(_dragpoint, false);
+            _canvas.globalAlpha = 1;
+        }
+        //使用requestAnimationFrame 提高性能
+        window.requestAnimationFrame(render);
     };
 
 
@@ -258,8 +266,9 @@ var TreeView = function() {
         return area;
     };
     //处理数据拖拽
+    
     var procDragAndDrop = function() {
-        var dragpoint = {};
+
         $(_container).bind('mousedown', function() {
             var x = event.pageX - this.offsetLeft + $(_container).parent().scrollLeft();
             var y = event.pageY - this.offsetTop + $(_container).parent().scrollTop();
@@ -273,15 +282,11 @@ var TreeView = function() {
             if (_capturepoint) {
                 var x = event.pageX - this.offsetLeft + $(_container).parent().scrollLeft();
                 var y = event.pageY - this.offsetTop + $(_container).parent().scrollTop();
-                dragpoint = clone(_data[_capturepoint['index']]);
+                _dragpoint = clone(_data[_capturepoint['index']]);
                 _data[_capturepoint['index']]['alpha'] = 0.5;
-                dragpoint['pos'] = {'x': x - self.rectangle.width / 2, 'y': y - dragpoint['height'] / 2};
+                _dragpoint['pos'] = {'x': x - self.rectangle.width / 2, 'y': y - _dragpoint['height'] / 2};
                 setPoint(_capturepoint['index'], x, y);
                 refresh();
-                _canvas.globalAlpha = 0.5;
-                _drawPoint(dragpoint, false);
-                _canvas.globalAlpha = 1;
-                showRange(x, y);
             }
         });
         $(_container).bind('mouseup', function() {
@@ -292,6 +297,7 @@ var TreeView = function() {
                 _data[_capturepoint['index']]['alpha'] = 1;
                 _lastcapturepoint = _capturepoint;
                 _capturepoint = '';
+                _dragpoint={};
                 refresh();
                 _lastcapturepoint['action'] = 'drop';
                 _lastcapturepoint['message'] = _data[_lastcapturepoint['index']]['parent'];
@@ -627,7 +633,7 @@ var TreeView = function() {
         if (_data[pointindex]['parent']) {
             _canvas.beginPath();
             if (self.linestyle == 2) {
-                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] + self.rectangle.width - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] +  _data[_data[pointindex]['parent']]['height'] / 2 + _controller_height / 2);
+                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] + self.rectangle.width - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] + _data[_data[pointindex]['parent']]['height'] / 2 + _controller_height / 2);
                 _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
                 _canvas.strokeStyle = self.linecolor;
             } else if (self.linestyle == 3) {
@@ -638,7 +644,7 @@ var TreeView = function() {
                 _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
                 _canvas.strokeStyle = self.linecolor;
             } else {
-                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] +  _data[_data[pointindex]['parent']]['height'] / 2 + _controller_height / 2);
+                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] + _data[_data[pointindex]['parent']]['height'] / 2 + _controller_height / 2);
                 _canvas.lineTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
                 _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + _data[pointindex]['height'] / 2);
                 _canvas.strokeStyle = self.linecolor;
