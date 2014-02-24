@@ -18,7 +18,11 @@
                 var treeViewInstance = new TreeView;
                 treeViewInstance.linestyle=1;
                 treeViewInstance.init({'container': 'canvas', 'data': json});
-                treeViewInstance.onMouseUp(function(data){
+                /*
+                 * data={'selectpoints':[{'index':'52ff2291e6d03f680a001f0f','action':'select','message':''},{'index':'52ff2291e6d03f680a001f0e','action':'select','message':''}],'deletepoint':{'index':'52ff2291e6d03f680a001f0c','action':'delete','message':''}};
+                 */
+                treeViewInstance.onClick(function(data){
+//                    alert(data[0]['action']);
                 });
             });
         </script>
