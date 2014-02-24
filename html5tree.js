@@ -6,6 +6,16 @@
  *todo:文档可以做的更详细
  *todo:增加更多的例子代码
  *todo:增加对节点内容的自动换行支持
+ *功能：
+ *支持自定义节点的样式（颜色，宽度，高度，缩进，间距）
+ *支持拖拽节点，改变的节点的顺序和父子关系
+ *支持节点的收缩和展开操作
+ *支持给节点绑定onclick事件
+ *支持给拖拽节点操作的onmouseup绑定事件
+ *支持在一个canvas上画多个tree
+ *支持在多个canvas上画多个tree
+ *支持同一个canvas上的tree可以互动
+ *支持不同canvas上的tree不可以互动
  */
 var TreeView = function() {
     //树在canvas中的上边距
@@ -15,7 +25,7 @@ var TreeView = function() {
     //每一级树的缩进
     this.tabspace = 60;
     //上下2个节点间的间距
-    this.space = 30;
+    this.space = 50;
     //节点间连线颜色
     this.linecolor = "#000000";
     //节点连接的样式
@@ -30,8 +40,12 @@ var TreeView = function() {
     var _canvas;
     var _data;
     var _toppoints, _capturepoint, _currentX, _currentY;
+    var _controller_width = 10;
+    var _controller_height = 10;
+    var _controller_color = '#000000'
+    var _controller_content_color = '#ffffff';
     _capturepoint = '';
-    _lastcapturepoint ='';
+    _lastcapturepoint = '';
     //重置过程中的参数值
     var _resetParams = function() {
         _toppoints = [];
@@ -83,8 +97,11 @@ var TreeView = function() {
     //渲染整个图
     var render = function() {
         for (var item in _data) {
-            _drawPoint(item);
-            _drawLine(item);
+            if (_data[item]['draw'] == 1) {
+                _drawPoint(item);
+                _drawLine(item);
+                _drawController(item);
+            }
         }
     };
 
@@ -93,11 +110,12 @@ var TreeView = function() {
     //画出多棵树
     var procAllTree = function(data) {
         for (var i = 0, l = _toppoints.length; i < l; i++) {
-            _currentX = self.leftmargin;
-
+            _currentX = self.leftmargin + _controller_width;
             procTree(_toppoints[i]);
         }
     };
+
+//    var _draw = 1;
     //画单棵树
     var procTree = function(pointindex) {
         if (!_data[pointindex]['parent']) {
@@ -108,9 +126,20 @@ var TreeView = function() {
         if (_currentY === 0) {
             _currentY = self.topmargin;
         }
-        _currentY = _currentY + self.space;
-        _data[pointindex]['pos'] = {"x": self.leftmargin + self.tabspace * _data[pointindex]['level'], "y": _currentY};
         setPointStatus(pointindex);
+        var draw=1;
+        //如果有父节点，并且父节点是收缩或者不显示状态
+        //那么这个节点也是不显示状态
+        if(_data[pointindex]['parent'] &&( _data[_data[pointindex]['parent']]['folder']==2 || _data[_data[pointindex]['parent']]['draw']==2)){
+            draw=2;
+        }
+        if (draw == 2) {
+            _data[pointindex]['draw'] = 2;
+        } else {
+            _currentY = _currentY + self.space;
+            _data[pointindex]['pos'] = {"x": _currentX + self.tabspace * _data[pointindex]['level'], "y": _currentY};
+            _data[pointindex]['draw'] = 1;
+        }
         //处理子节点
         if (_data[pointindex]['children'] != undefined && _data[pointindex]['children'] != '') {
             for (var i = 0, l = _data[pointindex]['children'].length; i < l; i++) {
@@ -119,24 +148,35 @@ var TreeView = function() {
         }
     };
     //获取节点索引
-    this.getPointIndex = function(x, y) {
+    var getPointIndex = function(x, y) {
         for (var item in _data) {
             if (_data[item]['pos']['x'] < x && _data[item]['pos']['x'] + self.rectangle.width > x) {
                 if (_data[item]['pos']['y'] < y && _data[item]['pos']['y'] + self.rectangle.height > y) {
+                    if(_data[item]['draw']==2)return false;
                     return {'index': item, 'action': 'selected', 'message': ''};
                 }
             }
         }
         return false;
     };
-
+    var getPointControllerIndex = function(x, y) {
+        for (var item in _data) {
+            if (_data[item]['pos']['x'] - _controller_width < x && _data[item]['pos']['x'] > x) {
+                if (_data[item]['pos']['y'] + (self.rectangle.height - _controller_height) / 2 < y && _data[item]['pos']['y'] + (self.rectangle.height + _controller_height) / 2 > y) {
+                    if(_data[item]['draw']==2)return false;
+                    return {'index': item, 'action': 'folder', 'message': ''};
+                }
+            }
+        }
+        return false;
+    };
     var procDragAndDrop = function() {
         var dragpoint = {};
         $(_container).bind('mousedown', function() {
             var x = event.pageX - this.offsetLeft;
             var y = event.pageY - this.offsetTop + $(_container).scrollTop();
-            var ret = self.getPointIndex(x, y);
-            _lastcapturepoint='';
+            var ret = getPointIndex(x, y);
+            _lastcapturepoint = '';
             if (ret) {
                 _capturepoint = ret;
             }
@@ -154,7 +194,7 @@ var TreeView = function() {
                 _canvas.globalAlpha = 0.5;
                 _drawPoint(dragpoint, false);
                 _canvas.globalAlpha = 1;
-//                showRange(x, y);
+                showRange(x, y);
             }
         });
         $(_container).bind('mouseup', function() {
@@ -163,22 +203,25 @@ var TreeView = function() {
                 var y = event.pageY - this.offsetTop + $(_container).scrollTop();
                 setPoint(_capturepoint['index'], x, y);
                 _data[_capturepoint['index']]['alpha'] = 1;
-                _lastcapturepoint=_capturepoint;
-                _capturepoint = ''; 
+                _lastcapturepoint = _capturepoint;
+                _capturepoint = '';
                 refresh();
-                _lastcapturepoint['action']='drop';
-                _lastcapturepoint['message']=_data[_lastcapturepoint['index']]['parent'];
+                _lastcapturepoint['action'] = 'drop';
+                _lastcapturepoint['message'] = _data[_lastcapturepoint['index']]['parent'];
             }
         });
     };
+
     //处理点击事件
     var procClick = function() {
         $(_container).bind('click', function() {
             var x = event.pageX - this.offsetLeft;
             var y = event.pageY - this.offsetTop + $(_container).scrollTop();
-            var ret = self.getPointIndex(x, y);
+            var ret = getPointIndex(x, y);
+            
             //如果点在节点上
             if (ret) {
+//                if(_data[ret['index']]['draw']==2)return false;
                 //如果是单选模式
                 if (self.singlechoice == 1) {
                     if (self.selectpoints[0] == undefined) {
@@ -212,8 +255,17 @@ var TreeView = function() {
                         self.selectpoints.push(ret);
                     }
                 }
-                refresh();
+
             }
+            ret = getPointControllerIndex(x, y);
+            if (ret) {
+                if (_data[ret['index']]['folder'] == undefined || _data[ret['index']]['folder'] == 1) {
+                    _data[ret['index']]['folder'] = 2;
+                } else {
+                    _data[ret['index']]['folder'] = 1;
+                }
+            }
+            refresh();
         });
     };
     var gotoUrl = function(pointindex) {
@@ -224,23 +276,21 @@ var TreeView = function() {
     //点击事件绑定
     this.onClick = function(func) {
         $(_container).bind('click', function() {
-            if (typeof (func) == 'function') {
+            if (typeof (func) === 'function') {
                 func(self.selectpoints);
             }
         });
     };
     //目标弹起绑定
-    this.onMouseUp=function(func){
+    this.onMouseUp = function(func) {
         $(_container).bind('mouseup', function() {
-            if (typeof (func) == 'function') {
-                // alert(_lastcapturepoint);
+            if (typeof (func) === 'function') {
                 func(_lastcapturepoint);
             }
         });
-    }
+    };
     var isParentPoint = function(parent, son) {
-        var parents =''; //getParents(son, '');
-        
+        var parents = '';
         var getParents = function(pointindex) {
             if (_data[pointindex]['parent'] == undefined || _data[pointindex]['parent'] == '')
                 return;
@@ -259,7 +309,7 @@ var TreeView = function() {
         if (index === false)
             return;
         //如果移动的节点是最近的节点的父节点，那就不相应这个移动操作
-        if (isParentPoint(pointindex,index)) {
+        if (isParentPoint(pointindex, index)) {
             return;
         }
         var nearestpoint = _data[index];
@@ -394,6 +444,15 @@ var TreeView = function() {
     //记录所有顶点索引
     var _procData = function(data) {
         for (var item in data) {
+            //如果没有folder字段 则赋值为1 表示张开状态
+            if (!data[item]['folder']) {
+                data[item]['folder'] = 1;
+            }
+            //节点默认都要画出
+            if (!data[item]['draw']) {
+                data[item]['draw'] = 1;
+            }
+
             data[item]['children'] = [];
         }
         for (var item in data) {
@@ -466,24 +525,42 @@ var TreeView = function() {
         if (_data[pointindex]['parent']) {
             _canvas.beginPath();
             if (self.linestyle == 2) {
-                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] + self.rectangle.width, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2);
-                _canvas.lineTo(_data[pointindex]['pos']['x'], _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] + self.rectangle.width - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2 + _controller_height / 2);
+                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
                 _canvas.strokeStyle = self.linecolor;
             } else if (self.linestyle == 3) {
-                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] + self.rectangle.width, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2);
-                var tab = _data[_data[pointindex]['parent']]['pos']['x'] + self.rectangle.width + (self.tabspace - self.rectangle.width) / 2;
+                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2 + self.rectangle.width, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2 + _controller_height / 2);
+                var tab = _data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2 + self.rectangle.width + (self.tabspace - self.rectangle.width) / 2;
                 _canvas.lineTo(tab, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2);
                 _canvas.lineTo(tab, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
-                _canvas.lineTo(_data[pointindex]['pos']['x'], _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
                 _canvas.strokeStyle = self.linecolor;
             } else {
-                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'], _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2);
-                _canvas.lineTo(_data[_data[pointindex]['parent']]['pos']['x'], _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
-                _canvas.lineTo(_data[pointindex]['pos']['x'], _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+                _canvas.moveTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[_data[pointindex]['parent']]['pos']['y'] + self.rectangle.height / 2 + _controller_height / 2);
+                _canvas.lineTo(_data[_data[pointindex]['parent']]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+                _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
                 _canvas.strokeStyle = self.linecolor;
             }
             _canvas.stroke();
+            _canvas.closePath();
+
         }
+    };
+
+    var _drawController = function(pointindex) {
+        _canvas.fillStyle = _controller_color;
+        _canvas.fillRect(_data[pointindex]['pos']['x'] - _controller_width, _data[pointindex]['pos']['y'] + (self.rectangle.height - _controller_height) / 2, _controller_width, _controller_height);
+        _canvas.strokeStyle = _controller_content_color;
+        _canvas.beginPath();
+        _canvas.moveTo(_data[pointindex]['pos']['x'] - _controller_width, _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+        _canvas.lineTo(_data[pointindex]['pos']['x'], _data[pointindex]['pos']['y'] + self.rectangle.height / 2);
+        //如果节点有子节点，并且子节点是不显示的
+        if (_data[pointindex]['children'] && _data[pointindex]['children'] != '' && _data[pointindex]['folder'] && _data[pointindex]['folder'] == 2) {
+            _canvas.moveTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + (self.rectangle.height - _controller_height) / 2);
+            _canvas.lineTo(_data[pointindex]['pos']['x'] - _controller_width / 2, _data[pointindex]['pos']['y'] + (self.rectangle.height + _controller_height) / 2);
+        }
+        _canvas.closePath();
+        _canvas.stroke();
     };
     //画节点
     var _drawPoint = function(pointindex) {
