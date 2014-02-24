@@ -35,19 +35,21 @@ var TreeView = function() {
     this.linestyle = 1;
     //节点样式
     this.rectangle = {"width": 40, "height": 20, fontsize: 16, "strokecolor": "#ffffff", "fillcolor": "#aad7ff", "select_strokecolor": '#eeeeee', 'select_fillcolor': '#0dd7ff'};
-    //目前选中的节点
-    var _selectpoints = [];
+    
     //单选模式 1单选 2多选
     this.singlechoice = 2;
     //删除按钮控制
     this.deletealert = "确认要删除吗？";
     //1表示可以删除有子节点的节点，2表示不能删除有子节点的节点
     this.deletechildren = 1;
+    //选取节点的半径（检查周围节点的范围半径）
+    this.r = 30;
     var _container;
     var _canvas;
     var _data;
-    var _toppoints, _capturepoint, _currentX, _currentY;
-
+    var _toppoints,  _currentX, _currentY;
+    //目前选中的节点
+    var _selectpoints = [];
     //收缩展开按钮的样式
     var _controller_width = 10;
     var _controller_height = 10;
@@ -107,7 +109,22 @@ var TreeView = function() {
         procDragAndDrop();
         render();
     };
-
+    //点击事件绑定
+    this.onClick = function(func) {
+        $(_container).bind('click', function() {
+            if (typeof (func) === 'function') {
+                func({'select': _selectpoints, 'delete': _deletepoint});
+            }
+        });
+    };
+    //目标弹起绑定
+    this.onMouseUp = function(func) {
+        $(_container).bind('mouseup', function() {
+            if (typeof (func) === 'function') {
+                func(_lastcapturepoint);
+            }
+        });
+    };
     //重置参数，刷新树上的数据
     var refresh = function() {
         _resetParams();
@@ -141,8 +158,6 @@ var TreeView = function() {
         window.requestAnimationFrame(render);
     };
 
-
-
     //画出多棵树
     var procAllTree = function(data) {
         for (var i = 0, l = _toppoints.length; i < l; i++) {
@@ -151,7 +166,6 @@ var TreeView = function() {
         }
     };
 
-//    var _draw = 1;
     //画单棵树
     var procTree = function(pointindex) {
         if (!_data[pointindex]['parent']) {
@@ -268,7 +282,6 @@ var TreeView = function() {
     //处理数据拖拽
     
     var procDragAndDrop = function() {
-
         $(_container).bind('mousedown', function() {
             var x = event.pageX - this.offsetLeft + $(_container).parent().scrollLeft();
             var y = event.pageY - this.offsetTop + $(_container).parent().scrollTop();
@@ -298,9 +311,9 @@ var TreeView = function() {
                 _lastcapturepoint = _capturepoint;
                 _capturepoint = '';
                 _dragpoint={};
-                refresh();
                 _lastcapturepoint['action'] = 'drop';
                 _lastcapturepoint['message'] = _data[_lastcapturepoint['index']]['parent'];
+                refresh();
             }
         });
     };
@@ -311,10 +324,8 @@ var TreeView = function() {
             var x = event.pageX - this.offsetLeft + $(_container).parent().scrollLeft();
             var y = event.pageY - this.offsetTop + $(_container).parent().scrollTop();
             var ret = getPointIndex(x, y);
-
             //如果点在节点上
             if (ret) {
-//                if(_data[ret['index']]['draw']==2)return false;
                 //如果是单选模式
                 if (self.singlechoice == 1) {
                     if (_selectpoints[0] == undefined) {
@@ -350,6 +361,7 @@ var TreeView = function() {
                 }
 
             }
+            //判断是否在控制节点上
             ret = getPointControllerIndex(x, y);
             if (ret) {
                 if (_data[ret['index']]['folder'] == undefined || _data[ret['index']]['folder'] == 1) {
@@ -358,6 +370,7 @@ var TreeView = function() {
                     _data[ret['index']]['folder'] = 1;
                 }
             }
+            //判断是否点击在删除按钮上
             ret = getPointDeleteButtonIndex(x, y);
             if (ret) {
                 if (confirm(self.deletealert)) {
@@ -377,27 +390,14 @@ var TreeView = function() {
         }
         delete _data[pointindex];
     };
+    //url跳转
     var gotoUrl = function(pointindex) {
         if (_data[pointindex]['link']) {
             window.open(_data[pointindex]['link']);
         }
     };
-    //点击事件绑定
-    this.onClick = function(func) {
-        $(_container).bind('click', function() {
-            if (typeof (func) === 'function') {
-                func({'select': _selectpoints, 'delete': _deletepoint});
-            }
-        });
-    };
-    //目标弹起绑定
-    this.onMouseUp = function(func) {
-        $(_container).bind('mouseup', function() {
-            if (typeof (func) === 'function') {
-                func(_lastcapturepoint);
-            }
-        });
-    };
+    
+    //判断是否为上级节点
     var isParentPoint = function(parent, son) {
         var parents = '';
         var getParents = function(pointindex) {
@@ -411,7 +411,6 @@ var TreeView = function() {
             return true;
         return false;
     };
-
     //设置节点的位置
     var setPoint = function(pointindex, x, y) {
         var index = getNearestPoint(x, y);
@@ -478,8 +477,7 @@ var TreeView = function() {
         }
         return index;
     };
-    //选取节点的半径
-    this.r = 30;
+
     //寻找附近的节点
     var nearPoints = function(x, y) {
         var nearpoints = [];
@@ -519,7 +517,6 @@ var TreeView = function() {
             return false;
         }
     };
-
     //设置节点为选中或者未选中状态
     var setPointStatus = function(pointindex) {
         if (self.singlechoice == 1) {
@@ -601,6 +598,7 @@ var TreeView = function() {
         }
         return false;
     };
+    //重新排序节点
     var _resetOrderno = function(sortedpoints) {
         for (var i = 0, l = sortedpoints.length; i < l; i++) {
             _data[sortedpoints[i]]['orderno'] = i + 1;
@@ -670,11 +668,7 @@ var TreeView = function() {
         _canvas.closePath();
         _canvas.stroke();
     };
-
-//    CanvasRenderingContext2D.prototype.lineTo=function(){
-////        alert(1);
-//    };
-
+    //画删除按钮
     var _drawDeleteButton = function(pointindex) {
         _canvas.fillStyle = _button_color;
         _canvas.fillRect(_data[pointindex]['pos']['x'] + self.rectangle.width, _data[pointindex]['pos']['y'] + (_data[pointindex]['height'] - _button_height) / 2, _button_width, _button_height);
