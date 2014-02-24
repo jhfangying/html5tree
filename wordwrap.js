@@ -12,7 +12,6 @@ var WordWrap = function(text, fontsize, width) {
         }
         return wordslength;
     };
-    
     //字符串，截取长度
     //返回截取的位置
     var cutString=function(str, leng) {

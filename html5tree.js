@@ -128,7 +128,8 @@ var TreeView = function() {
     //重置参数，刷新树上的数据
     var refresh = function() {
         _resetParams();
-        _canvas.clearRect(0, 0, _container.width, _container.height);
+        _canvas.width=_canvas.width;
+//        _canvas.clearRect(0, 0, _container.width, _container.height);
         _procData(_data);
         //begin 画图
         procAllTree(_data);
