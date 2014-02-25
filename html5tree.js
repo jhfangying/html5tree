@@ -44,6 +44,10 @@ var TreeView = function() {
     this.deletechildren = 1;
     //选取节点的半径（检查周围节点的范围半径）
     this.r = 30;
+    //只能同级节点间移动
+//    this.droplevellock=1;
+    //1表示只能同父亲间移动2表示没有限制
+    this.dropfatherlock=2;
     var _container;
     var _canvas;
     var _data;
@@ -53,7 +57,7 @@ var TreeView = function() {
     //收缩展开按钮的样式
     var _controller_width = 10;
     var _controller_height = 10;
-    var _controller_color = '#000000'
+    var _controller_color = '#000000';
     var _controller_content_color = '#ffffff';
     //拖拽相关参数
     var _dragpoint = {};
@@ -70,6 +74,7 @@ var TreeView = function() {
     var _button_color = '#000';
     var _button_content_color = '#fff';
     var _deletepoint = false;
+    var _mousepos={x:0,y:0};
     //重置过程中的参数值
     var _resetParams = function() {
         _toppoints = [];
@@ -129,7 +134,6 @@ var TreeView = function() {
     var refresh = function() {
         _resetParams();
         _canvas.width=_canvas.width;
-//        _canvas.clearRect(0, 0, _container.width, _container.height);
         _procData(_data);
         //begin 画图
         procAllTree(_data);
@@ -154,6 +158,7 @@ var TreeView = function() {
             _canvas.globalAlpha = 0.5;
             _drawPoint(_dragpoint, false);
             _canvas.globalAlpha = 1;
+            showRange(_mousepos.x,_mousepos.y);
         }
         //使用requestAnimationFrame 提高性能
         window.requestAnimationFrame(render);
@@ -300,7 +305,10 @@ var TreeView = function() {
                 _data[_capturepoint['index']]['alpha'] = 0.5;
                 _dragpoint['pos'] = {'x': x - self.rectangle.width / 2, 'y': y - _dragpoint['height'] / 2};
                 setPoint(_capturepoint['index'], x, y);
+                _mousepos.x=x;
+                _mousepos.y=y;
                 refresh();
+                
             }
         });
         $(_container).bind('mouseup', function() {
@@ -422,28 +430,32 @@ var TreeView = function() {
             return;
         }
         var nearestpoint = _data[index];
+        if(self.dropfatherlock==1 && nearestpoint['parent']!=_data[pointindex]['parent'])return;
         //如果鼠标坐标在节点左侧超出半个节点宽度
-        if (nearestpoint['pos']['x'] - x > self.rectangle.width / 2) {
-            _data[pointindex]['parent'] = nearestpoint['parent'] != '' ? _data[nearestpoint['parent']]['parent'] : '';
-            _data[pointindex]['level'] = nearestpoint['level'] > 0 ? (nearestpoint['level'] - 1) : 0;
-            return;
-        }
-        //如果鼠标在节点右侧超出半个节点宽度
-        if (x - nearestpoint['pos']['x'] > self.rectangle.width / 2) {
-            if (pointindex == nearestpoint['_id'])
+        if(self.dropfatherlock!=1){
+            if (nearestpoint['pos']['x'] - x > self.rectangle.width / 2) {
+                _data[pointindex]['parent'] = nearestpoint['parent'] != '' ? _data[nearestpoint['parent']]['parent'] : '';
+                _data[pointindex]['level'] = nearestpoint['level'] > 0 ? (nearestpoint['level'] - 1) : 0;
                 return;
-            _data[pointindex]['parent'] = nearestpoint['_id'];
-            _data[pointindex]['level'] = nearestpoint['level'] + 1;
-            return;
+            }
+            //如果鼠标在节点右侧超出半个节点宽度
+            if (x - nearestpoint['pos']['x'] > self.rectangle.width / 2) {
+                if (pointindex == nearestpoint['_id'])
+                    return;
+                _data[pointindex]['parent'] = nearestpoint['_id'];
+                _data[pointindex]['level'] = nearestpoint['level'] + 1;
+                return;
+            }
         }
+        
         //如果鼠标在节点下方，左右都不超出半个节点宽度，下方超出半个节点高度
-        if (y - nearestpoint['pos']['y'] > _data[pointindex]['height'] / 2) {
+        if (y - nearestpoint['pos']['y'] > nearestpoint['height'] / 2) {
             _data[pointindex]['parent'] = nearestpoint['parent'];
             _data[pointindex]['orderno'] = nearestpoint['orderno'] + 0.5;
             return;
         }
         //如果鼠标在节点上方，左右都不超出半个节点宽度，上方超出半个节点高度
-        if (nearestpoint['pos']['y'] - y > _data[pointindex]['height'] / 2) {
+        if (nearestpoint['pos']['y'] - y < nearestpoint['height'] / 2) {
             _data[pointindex]['parent'] = nearestpoint['parent'];
             _data[pointindex]['orderno'] = nearestpoint['orderno'] - 0.5;
             return;
@@ -575,6 +587,10 @@ var TreeView = function() {
                 }
             }
         }
+        for (var item in data) {
+            data[item]['children']=_quickSortPoints(data[item]['children']);
+            _resetOrderno(data[item]['children']);
+        }
         _toppoints = _quickSortPoints(_toppoints);
         _resetOrderno(_toppoints);
     };
@@ -587,8 +603,8 @@ var TreeView = function() {
             if (_data[_data[pointindex]['parent']]['children'].inarray(pointindex) === false) {
                 _data[_data[pointindex]['parent']]['children'].push(pointindex);
             }
-            _data[_data[pointindex]['parent']]['children'] = _quickSortPoints(_data[_data[pointindex]['parent']]['children']);
-            _resetOrderno(_data[_data[pointindex]['parent']]['children']);
+//            _data[_data[pointindex]['parent']]['children'] = _quickSortPoints(_data[_data[pointindex]['parent']]['children']);
+//            _resetOrderno(_data[_data[pointindex]['parent']]['children']);
         }
     };
 
