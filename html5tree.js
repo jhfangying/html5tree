@@ -160,6 +160,7 @@ var TreeView = function() {
             _canvas.globalAlpha = 1;
             showRange(_mousepos.x,_mousepos.y);
         }
+        
         //使用requestAnimationFrame 提高性能
         window.requestAnimationFrame(render);
     };
