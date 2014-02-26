@@ -68,7 +68,7 @@
 
                     <h3>
                         <a name="html5tree_wendang" class="anchor" href="#html5tree_wendang"><span class="octicon octicon-link"></span></a>文档</h3>
-                    <p>
+                    <p>参数</p>
                     <table>
                         <thead>
                             <tr><th width="20%">参数名称</th><th>功能</th></tr>
@@ -88,12 +88,17 @@
                             <tr><td>dropfatherlock</td><td>是否让拖拽节点只能在，同一个父节点下进行（锁定父节点），1表示只能在同一个父节点下进行拖拽排序，2表示可以任意节点拖拽排序</td></tr>
                         </tbody>
                     </table>
-                    </p>
-
+                    <p>方法</p>
+                    <table>
+                        <thead>
+                            <tr><th width="20%">方法名称</th><th>功能</th></tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>    
                     <h3>
                         <a name="html5tree_shili" class="anchor" href="#html5tree_shili"><span class="octicon octicon-link"></span></a>实例</h3>
-                    <p>
-                        测试数据
+                    <p>测试数据</p>
                     <pre><code>
 var json={
             "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "节点1"},
@@ -103,15 +108,14 @@ var json={
             "52ff2291e6d03f680a001f0f": {"_id": "52ff2291e6d03f680a001f0f", "text": "节点3", "children": [], "parent": "52ff228fe6d03f680a00675f"},
         };
 </code></pre>
-                    </p>
+
                     <p>
                         实例一：创建树
+                    </p>
                     <pre><code>
-$(document).ready(function(){
-    var sample1tree=new TreeView();
-    sample1tree.init({'container':'sample1','data':json});
+var sample1tree=new TreeView();
+sample1tree.init({'container':'sample1','data':json});
 
-});
 </code></pre>
                     <script type="text/javascript">
                         var json = {
@@ -122,49 +126,90 @@ $(document).ready(function(){
                             "52ff2291e6d03f680a001f0f": {"_id": "52ff2291e6d03f680a001f0f", "text": "节点3", "children": [], "parent": "52ff228fe6d03f680a00675f"},
                         };
                         $(document).ready(function() {
+                            //实例一
                             var sample1tree = new TreeView();
                             sample1tree.init({'container': 'sample1', 'data': json});
-//                            sample1tree.onClick(function(data))
+                            //实例二
                             var sample2tree = new TreeView();
+                            sample2tree.singlechoice = 1;
+                            sample2tree.dropfatherlock = 1;
                             sample2tree.init({'container': 'sample2', 'data': json});
+                            //实例三
+                            var sample3tree = new TreeView();
+                            sample3tree.init({'container': 'sample3', 'data': json});
+                            sample3tree.onClick(function(data) {
+                                var text = '选中的节点id包括:';
+                                for (var i = 0, l = data.select.length; i < l; i++) {
+                                    text += ',' + data.select[i].index;
+                                }
+                                alert(text);
+                            });
+                            //实例四
+                            var sample4tree = new TreeView();
+                            sample4tree.init({'container': 'sample4', 'data': json});
+                            sample4tree.onClick(function(data) {
+                                if (data.delete) {
+                                    var text = '删除节点id:';
+                                    text = text + data.delete.index;
+                                    alert(text);
+                                }
+                            });
+                            //实例五
+                            var sample5tree = new TreeView();
+                            sample5tree.init({'container': 'sample5', 'data': json});
+                            sample5tree.onMouseUp(function(data) {
+                                var text = '拖拽的节点id:';
+                                text=text+data.index;
+                                text=text+'拖拽节点的父节点是：'+data.message.parent;
+                                text=text+'拖拽节点的父节点下子节点的顺序是：'+data.message.order;
+                                alert(text);
+                            });
                         });
                     </script>
                     <canvas id="sample1" width="300" height="300"></canvas>
-                </p><p>
-                实例一：单选树
-            <pre><code>
-$(document).ready(function(){
-    var sample2tree=new TreeView();
-    sample2tree.init({'container':'sample2','data':json});
-});
+                    <p>
+                        实例二：创建单选树，锁定节点只能在同父节点下移动</p>
+                    <pre><code>
+var sample2tree = new TreeView();
+sample2tree.singlechoice=1;
+sample2tree.dropfatherlock=1;
+sample2tree.init({'container': 'sample2', 'data': json});
 </code></pre>
-            <canvas id="sample2" width="300" height="300"></canvas>
-            </p>
+                    <canvas id="sample2" width="300" height="300"></canvas>
+                    <p>实例三：选择节点</p>
+                    <pre><code>
+var sample3tree = new TreeView();
+sample3tree.init({'container': 'sample3', 'data': json});
+</code></pre>
+                    <canvas id="sample3" width="300" height="300"></canvas>
+                    <p>实例四：删除节点</p>
+                    <canvas id="sample4" width="300" height="300"></canvas>
+                    <p>实例六：拖拽节点</p>
+                    <canvas id="sample5" width="300" height="300"></canvas>
+                    <h3>
+                        <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>创建者</h3>
+                    <p><a href="http://www.fyhome.com.cn">@fy</a></p>
 
-            <h3>
-                <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>创建者</h3>
-            <p><a href="http://www.fyhome.com.cn">@fy</a></p>
+                    <h3>
+                        <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>联系方式</h3>
 
-            <h3>
-                <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>联系方式</h3>
+                    <p>如果在实际使用中碰到任何问题，可以联系我，我的QQ:6765419,我的邮箱<a href="mailto:jhfangying@gmail.com">jhfangying@gmail.com</a> </p>
+                </section>
 
-            <p>如果在实际使用中碰到任何问题，可以联系我，我的QQ:6765419,我的邮箱<a href="mailto:jhfangying@gmail.com">jhfangying@gmail.com</a> </p>
-        </section>
+                <aside id="sidebar">
+                    <a href="https://github.com/jhfangying/html5tree/zipball/master" class="button">
+                        <small>Download</small>
+                        .zip file
+                    </a>
+                    <a href="https://github.com/jhfangying/html5tree/tarball/master" class="button">
+                        <small>Download</small>
+                        .tar.gz file
+                    </a>
+                    <p class="repo-owner"><a href="https://github.com/jhfangying/html5tree"></a> is maintained by <a href="https://github.com/jhfangying">jhfangying</a>.</p>
 
-        <aside id="sidebar">
-            <a href="https://github.com/jhfangying/html5tree/zipball/master" class="button">
-                <small>Download</small>
-                .zip file
-            </a>
-            <a href="https://github.com/jhfangying/html5tree/tarball/master" class="button">
-                <small>Download</small>
-                .tar.gz file
-            </a>
-            <p class="repo-owner"><a href="https://github.com/jhfangying/html5tree"></a> is maintained by <a href="https://github.com/jhfangying">jhfangying</a>.</p>
-
-            <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-    </div>
-</div>
-</body>
+                    <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+                </aside>
+            </div>
+        </div>
+    </body>
 </html>
