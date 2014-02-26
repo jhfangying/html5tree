@@ -119,6 +119,7 @@ var TreeView = function() {
         $(_container).bind('click', function() {
             if (typeof (func) === 'function') {
                 func({'select': _selectpoints, 'delete': _deletepoint});
+                _deletepoint=false;
             }
         });
     };
@@ -158,7 +159,7 @@ var TreeView = function() {
             _canvas.globalAlpha = 0.5;
             _drawPoint(_dragpoint, false);
             _canvas.globalAlpha = 1;
-            showRange(_mousepos.x, _mousepos.y);
+//            showRange(_mousepos.x, _mousepos.y);
         }
 
         //使用requestAnimationFrame 提高性能
@@ -320,9 +321,10 @@ var TreeView = function() {
                 _lastcapturepoint = _capturepoint;
                 _capturepoint = '';
                 _dragpoint = {};
-                _lastcapturepoint['action'] = 'drop';
-                _lastcapturepoint['message'] = _data[_lastcapturepoint['index']]['parent'];
+                
                 refresh();
+                _lastcapturepoint['action'] = 'drop';
+                _lastcapturepoint['message'] = {'parent':_data[_lastcapturepoint['index']]['parent'],'order':_data[_data[_lastcapturepoint['index']]['parent']]['children']};
             }
         });
     };
@@ -400,6 +402,7 @@ var TreeView = function() {
             //判断是否点击在删除按钮上
             ret = getPointDeleteButtonIndex(x, y);
             if (ret) {
+                _deletepoint=ret;
                 if (confirm(self.deletealert)) {
                     deleteTree(ret['index']);
                 }
