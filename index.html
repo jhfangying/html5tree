@@ -1,42 +1,42 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-    <script type="text/javascript" src="./javascripts/wordwrap.js"></script>
-    <script type="text/javascript" src="./javascripts/html5tree.js"></script>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+        <script type="text/javascript" src="./javascripts/wordwrap.js"></script>
+        <script type="text/javascript" src="./javascripts/html5tree.js"></script>
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+        <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
 
-    <title>Html5tree by jhfangying</title>
-  </head>
+        <title>Html5tree by jhfangying</title>
+    </head>
 
-  <body>
-    <header>
-      <div class="inner">
-        <h1>Html5tree</h1>
-        <h2>一个基于html5 canva创建的树控件，这个控件可以通过json和js进行控制操作。</h2>
-        <a href="https://github.com/jhfangying/html5tree" class="button"><small>View project on</small>GitHub</a>
-      </div>
-    </header>
+    <body>
+        <header>
+            <div class="inner">
+                <h1>Html5tree</h1>
+                <h2>一个基于html5 canva创建的树控件，这个控件可以通过json和js进行控制操作。</h2>
+                <a href="https://github.com/jhfangying/html5tree" class="button"><small>View project on</small>GitHub</a>
+            </div>
+        </header>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h3>
-<a name="html5tree_gongneng" class="anchor" href="#html5tree_gongneng"><span class="octicon octicon-link"></span></a>功能</h3>
+        <div id="content-wrapper">
+            <div class="inner clearfix">
+                <section id="main-content">
+                    <h3>
+                        <a name="html5tree_gongneng" class="anchor" href="#html5tree_gongneng"><span class="octicon octicon-link"></span></a>功能</h3>
 
-<p>Html5tree是一个基于html5 canvas创建的控件，这个控件支持如下功能：</p>
+                    <p>Html5tree是一个基于html5 canvas创建的控件，这个控件支持如下功能：</p>
 
-<pre>
+                    <pre>
  *支持自定义节点的样式（颜色，宽度，高度，缩进，间距）
  *支持拖拽节点，改变的节点的顺序和父子关系
  *支持节点的收缩和展开操作
@@ -49,15 +49,15 @@
  *支持自适应画布大小
  *支持删除节点操作
  *支持节点固定宽度，文字超出宽度自动换行，自动拉长节点高度
-</pre>
+                    </pre>
 
-<p>注：html5tree 只是在chrome中测试通过，没有对其他浏览器进行过使用测试，所以不能保证在其他浏览器中正常运行。</p>
+                    <p>注：html5tree 只是在chrome中测试通过，没有对其他浏览器进行过使用测试，所以不能保证在其他浏览器中正常运行。</p>
 
-<h3>
-<a name="html5tree_diaoyong" class="anchor" href="#html5tree_diaoyong"><span class="octicon octicon-link"></span></a>调用方法</h3>
+                    <h3>
+                        <a name="html5tree_diaoyong" class="anchor" href="#html5tree_diaoyong"><span class="octicon octicon-link"></span></a>调用方法</h3>
 
-<p>创建一棵树</p>
-<pre><code>
+                    <p>创建一棵树</p>
+                    <pre><code>
     //树的结构数据
     var samplejson={};
     //创建树对象
@@ -66,35 +66,35 @@
     treeview.init({'container':'canvas','data':samplejson});
 </code></pre>
 
-<h3>
-<a name="html5tree_wendang" class="anchor" href="#html5tree_wendang"><span class="octicon octicon-link"></span></a>文档</h3>
-<p>
-<table>
-    <thead>
-    <tr><th width="20%">参数名称</th><th>功能</th></tr>
-    </thead>
-    <tbody>
-        <tr><td>topmargin</td><td>画布内容相对画布的上边距</td></tr>
-        <tr><td>leftmargin</td><td>画布内容相对画布的左边距</td></tr>
-        <tr><td>tabspace</td><td>树上节点的缩进值，单位像素</td></tr>
-        <tr><td>space</td><td>树上节点的上下间距，单位像素</td></tr>
-        <tr><td>linecolor</td><td>节点间的连线颜色</td></tr>
-        <tr><td>linestyle</td><td>节点间连线样式，1表示父节点左侧中点到子节点左侧中点连折线，2表示父节点尾部中点到子节点尾部中点连直线，3表示父节点尾部中点到子节点尾部中点连折线</td></tr>
-        <tr><td>rectangle</td><td>节点的样式设置，{"width": 40, "height": 20, fontsize: 16, "strokecolor": "#ffffff", "fillcolor": "#aad7ff",  "select_strokecolor": '#eeeeee', 'select_fillcolor': '#0dd7ff'};</td></tr>
-        <tr><td>singlechoice</td><td>树节点选择模式，1表示单选，2表示多选</td></tr>
-        <tr><td>deletealert</td><td>当点击删除按钮是，给予的提示文字</td></tr>
-        <tr><td>deletechildren</td><td>是否允许删除带子节点的节点，1表示允许，2表示不允许</td></tr>
-        <tr><td>r</td><td>节点拖拽时检测周围节点的范围半径</td></tr>
-        <tr><td>dropfatherlock</td><td>是否让拖拽节点只能在，同一个父节点下进行（锁定父节点），1表示只能在同一个父节点下进行拖拽排序，2表示可以任意节点拖拽排序</td></tr>
-    </tbody>
-</table>
-</p>
+                    <h3>
+                        <a name="html5tree_wendang" class="anchor" href="#html5tree_wendang"><span class="octicon octicon-link"></span></a>文档</h3>
+                    <p>
+                    <table>
+                        <thead>
+                            <tr><th width="20%">参数名称</th><th>功能</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>topmargin</td><td>画布内容相对画布的上边距</td></tr>
+                            <tr><td>leftmargin</td><td>画布内容相对画布的左边距</td></tr>
+                            <tr><td>tabspace</td><td>树上节点的缩进值，单位像素</td></tr>
+                            <tr><td>space</td><td>树上节点的上下间距，单位像素</td></tr>
+                            <tr><td>linecolor</td><td>节点间的连线颜色</td></tr>
+                            <tr><td>linestyle</td><td>节点间连线样式，1表示父节点左侧中点到子节点左侧中点连折线，2表示父节点尾部中点到子节点尾部中点连直线，3表示父节点尾部中点到子节点尾部中点连折线</td></tr>
+                            <tr><td>rectangle</td><td>节点的样式设置，{"width": 40, "height": 20, fontsize: 16, "strokecolor": "#ffffff", "fillcolor": "#aad7ff",  "select_strokecolor": '#eeeeee', 'select_fillcolor': '#0dd7ff'};</td></tr>
+                            <tr><td>singlechoice</td><td>树节点选择模式，1表示单选，2表示多选</td></tr>
+                            <tr><td>deletealert</td><td>当点击删除按钮是，给予的提示文字</td></tr>
+                            <tr><td>deletechildren</td><td>是否允许删除带子节点的节点，1表示允许，2表示不允许</td></tr>
+                            <tr><td>r</td><td>节点拖拽时检测周围节点的范围半径</td></tr>
+                            <tr><td>dropfatherlock</td><td>是否让拖拽节点只能在，同一个父节点下进行（锁定父节点），1表示只能在同一个父节点下进行拖拽排序，2表示可以任意节点拖拽排序</td></tr>
+                        </tbody>
+                    </table>
+                    </p>
 
-<h3>
-<a name="html5tree_shili" class="anchor" href="#html5tree_shili"><span class="octicon octicon-link"></span></a>实例</h3>
-<p>
-    测试数据
-<pre><code>
+                    <h3>
+                        <a name="html5tree_shili" class="anchor" href="#html5tree_shili"><span class="octicon octicon-link"></span></a>实例</h3>
+                    <p>
+                        测试数据
+                    <pre><code>
 var json={
             "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "节点1"},
             "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "测试下长文字节点的排版问题","orderno":4,"children": [], "parent": "52ff228fe6d03f680a00675f"},
@@ -103,53 +103,67 @@ var json={
             "52ff2291e6d03f680a001f0f": {"_id": "52ff2291e6d03f680a001f0f", "text": "节点3", "children": [], "parent": "52ff228fe6d03f680a00675f"},
         };
 </code></pre>
-    实例一：
-<pre><code>
+                    </p>
+                    <p>
+                        实例一：创建树
+                    <pre><code>
 $(document).ready(function(){
     var sample1tree=new TreeView();
     sample1tree.init({'container':'sample1','data':json});
+
 });
 </code></pre>
-    <script type="text/javascript">
-        var json={
-                "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "节点1"},
-                "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "测试下长文字节点的排版问题","orderno":4,"children": [], "parent": "52ff228fe6d03f680a00675f"},
-                "52ff2291e6d03f680a001f0e": {"_id": "52ff2291e6d03f680a001f0e", "text": "节点2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-                "52ff2291e6d03f680a001f10": {"_id": "52ff2291e6d03f680a001f10", "text": "长文字节点的排版问题已经解决了", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-                "52ff2291e6d03f680a001f0f": {"_id": "52ff2291e6d03f680a001f0f", "text": "节点3", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-            };
-        $(document).ready(function(){
-            var sample1tree=new TreeView();
-            sample1tree.init({'container':'sample1','data':json});
-        });
-    </script>
-    <canvas id="sample1" width="300" height="300"></canvas>
-</p>
+                    <script type="text/javascript">
+                        var json = {
+                            "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "节点1"},
+                            "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "测试下长文字节点的排版问题", "orderno": 4, "children": [], "parent": "52ff228fe6d03f680a00675f"},
+                            "52ff2291e6d03f680a001f0e": {"_id": "52ff2291e6d03f680a001f0e", "text": "节点2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
+                            "52ff2291e6d03f680a001f10": {"_id": "52ff2291e6d03f680a001f10", "text": "长文字节点的排版问题已经解决了", "children": [], "parent": "52ff228fe6d03f680a00675f"},
+                            "52ff2291e6d03f680a001f0f": {"_id": "52ff2291e6d03f680a001f0f", "text": "节点3", "children": [], "parent": "52ff228fe6d03f680a00675f"},
+                        };
+                        $(document).ready(function() {
+                            var sample1tree = new TreeView();
+                            sample1tree.init({'container': 'sample1', 'data': json});
+                            var sample2tree = new TreeView();
+                            sample2tree.init({'container': 'sample2', 'data': json});
+                        });
+                    </script>
+                    <canvas id="sample1" width="300" height="300"></canvas>
+                </p><p>
+                实例一：单选树
+            <pre><code>
+$(document).ready(function(){
+    var sample2tree=new TreeView();
+    sample2tree.init({'container':'sample2','data':json});
+});
+</code></pre>
+            <canvas id="sample2" width="300" height="300"></canvas>
+            </p>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>创建者</h3>
-<p><a href="http://www.fyhome.com.cn">@fy</a></p>
+            <h3>
+                <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>创建者</h3>
+            <p><a href="http://www.fyhome.com.cn">@fy</a></p>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>联系方式</h3>
+            <h3>
+                <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>联系方式</h3>
 
-<p>如果在实际使用中碰到任何问题，可以联系我，我的QQ:6765419,我的邮箱<a href="mailto:jhfangying@gmail.com">jhfangying@gmail.com</a> </p>
+            <p>如果在实际使用中碰到任何问题，可以联系我，我的QQ:6765419,我的邮箱<a href="mailto:jhfangying@gmail.com">jhfangying@gmail.com</a> </p>
         </section>
 
         <aside id="sidebar">
-          <a href="https://github.com/jhfangying/html5tree/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/jhfangying/html5tree/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-          <p class="repo-owner"><a href="https://github.com/jhfangying/html5tree"></a> is maintained by <a href="https://github.com/jhfangying">jhfangying</a>.</p>
+            <a href="https://github.com/jhfangying/html5tree/zipball/master" class="button">
+                <small>Download</small>
+                .zip file
+            </a>
+            <a href="https://github.com/jhfangying/html5tree/tarball/master" class="button">
+                <small>Download</small>
+                .tar.gz file
+            </a>
+            <p class="repo-owner"><a href="https://github.com/jhfangying/html5tree"></a> is maintained by <a href="https://github.com/jhfangying">jhfangying</a>.</p>
 
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+            <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
         </aside>
-      </div>
     </div>
-  </body>
+</div>
+</body>
 </html>
