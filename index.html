@@ -8,6 +8,9 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="./javascripts/wordwrap.js"></script>
+    <script type="text/javascript" src="./javascripts/html5tree.js"></script>
 
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -29,36 +32,84 @@
       <div class="inner clearfix">
         <section id="main-content">
           <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<a name="html5tree_gongneng" class="anchor" href="#html5tree_gongneng"><span class="octicon octicon-link"></span></a>功能</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>Html5tree是一个基于html5 canvas创建的控件，这个控件支持如下功能：</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<pre>
+ *支持自定义节点的样式（颜色，宽度，高度，缩进，间距）
+ *支持拖拽节点，改变的节点的顺序和父子关系
+ *支持节点的收缩和展开操作
+ *支持给节点绑定onclick事件
+ *支持给拖拽节点操作的onmouseup绑定事件
+ *支持在一个canvas上画多个tree
+ *支持在多个canvas上画多个tree
+ *支持同一个canvas上的tree可以互动
+ *支持不同canvas上的tree不可以互动
+ *支持自适应画布大小
+ *支持删除节点操作
+ *支持节点固定宽度，文字超出宽度自动换行，自动拉长节点高度
+</pre>
+
+<p>注：html5tree 只是在chrome中测试通过，没有对其他浏览器进行过使用测试，所以不能保证在其他浏览器中正常运行。</p>
+
+<h3>
+<a name="html5tree_diaoyong" class="anchor" href="#html5tree_diaoyong"><span class="octicon octicon-link"></span></a>调用方法</h3>
+
+<p>创建一棵树</p>
+<pre><code>
+    //树的结构数据
+    var samplejson={};
+    //创建树对象
+    var treeview=new TreeView();
+    //初始化树
+    treeview.init({'container':'canvas','data':samplejson});
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h3>
+<a name="html5tree_wendang" class="anchor" href="#html5tree_wendang"><span class="octicon octicon-link"></span></a>文档</h3>
+<p>
+<table>
+    <thead>
+    <tr><th width="20%">参数名称</th><th>功能</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>topmargin</td><td>画布内容相对画布的上边距</td></tr>
+        <tr><td>leftmargin</td><td>画布内容相对画布的左边距</td></tr>
+        <tr><td>tabspace</td><td>树上节点的缩进值，单位像素</td></tr>
+        <tr><td>space</td><td>树上节点的上下间距，单位像素</td></tr>
+        <tr><td>linecolor</td><td>节点间的连线颜色</td></tr>
+        <tr><td>linestyle</td><td>节点间连线样式，1表示父节点左侧中点到子节点左侧中点连折线，2表示父节点尾部中点到子节点尾部中点连直线，3表示父节点尾部中点到子节点尾部中点连折线</td></tr>
+        <tr><td>rectangle</td><td>节点的样式设置，{"width": 40, "height": 20, fontsize: 16, "strokecolor": "#ffffff", "fillcolor": "#aad7ff",  "select_strokecolor": '#eeeeee', 'select_fillcolor': '#0dd7ff'};</td></tr>
+        <tr><td>singlechoice</td><td>树节点选择模式，1表示单选，2表示多选</td></tr>
+        <tr><td>deletealert</td><td>当点击删除按钮是，给予的提示文字</td></tr>
+        <tr><td>deletechildren</td><td>是否允许删除带子节点的节点，1表示允许，2表示不允许</td></tr>
+        <tr><td>r</td><td>节点拖拽时检测周围节点的范围半径</td></tr>
+        <tr><td>dropfatherlock</td><td>是否让拖拽节点只能在，同一个父节点下进行（锁定父节点），1表示只能在同一个父节点下进行拖拽排序，2表示可以任意节点拖拽排序</td></tr>
+    </tbody>
+</table>
+</p>
 
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<a name="html5tree_shili" class="anchor" href="#html5tree_shili"><span class="octicon octicon-link"></span></a>实例</h3>
+<p>
+    <script type="text/javascript">
+        var json={};
+        $(document).ready(function(){
+            var sample1tree=new TreeView();
+        });
+    </script>
+    <canvas id="sample1" width="300" height="300"></canvas>
+</p>
 
 <h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>创建者</h3>
+<p><a href="http://www.fyhome.com.cn">@fy</a></p>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>联系方式</h3>
+
+<p>如果在实际使用中碰到任何问题，可以联系我，我的QQ:6765419,我的邮箱<a href="mailto:jhfangying@gmail.com">jhfangying@gmail.com</a> </p>
         </section>
 
         <aside id="sidebar">
@@ -70,14 +121,11 @@ $ git checkout gh-pages
             <small>Download</small>
             .tar.gz file
           </a>
-
           <p class="repo-owner"><a href="https://github.com/jhfangying/html5tree"></a> is maintained by <a href="https://github.com/jhfangying">jhfangying</a>.</p>
 
           <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
         </aside>
       </div>
     </div>
-
-  
   </body>
 </html>
