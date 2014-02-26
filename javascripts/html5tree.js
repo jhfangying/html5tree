@@ -35,7 +35,7 @@ var TreeView = function() {
     this.linestyle = 1;
     //节点样式
     this.rectangle = {"width": 40, "height": 20, fontsize: 16, "strokecolor": "#ffffff", "fillcolor": "#aad7ff", "select_strokecolor": '#eeeeee', 'select_fillcolor': '#0dd7ff'};
-    
+
     //单选模式 1单选 2多选
     this.singlechoice = 2;
     //删除按钮控制
@@ -47,11 +47,11 @@ var TreeView = function() {
     //只能同级节点间移动
 //    this.droplevellock=1;
     //1表示只能同父亲间移动2表示没有限制
-    this.dropfatherlock=2;
+    this.dropfatherlock = 2;
     var _container;
     var _canvas;
     var _data;
-    var _toppoints,  _currentX, _currentY;
+    var _toppoints, _currentX, _currentY;
     //目前选中的节点
     var _selectpoints = [];
     //收缩展开按钮的样式
@@ -74,7 +74,7 @@ var TreeView = function() {
     var _button_color = '#000';
     var _button_content_color = '#fff';
     var _deletepoint = false;
-    var _mousepos={x:0,y:0};
+    var _mousepos = {x: 0, y: 0};
     //重置过程中的参数值
     var _resetParams = function() {
         _toppoints = [];
@@ -133,7 +133,7 @@ var TreeView = function() {
     //重置参数，刷新树上的数据
     var refresh = function() {
         _resetParams();
-        _canvas.width=_canvas.width;
+        _canvas.width = _canvas.width;
         _procData(_data);
         //begin 画图
         procAllTree(_data);
@@ -158,9 +158,9 @@ var TreeView = function() {
             _canvas.globalAlpha = 0.5;
             _drawPoint(_dragpoint, false);
             _canvas.globalAlpha = 1;
-            showRange(_mousepos.x,_mousepos.y);
+            showRange(_mousepos.x, _mousepos.y);
         }
-        
+
         //使用requestAnimationFrame 提高性能
         window.requestAnimationFrame(render);
     };
@@ -287,7 +287,7 @@ var TreeView = function() {
         return area;
     };
     //处理数据拖拽
-    
+
     var procDragAndDrop = function() {
         $(_container).bind('mousedown', function() {
             var x = event.pageX - this.offsetLeft + $(_container).parent().scrollLeft();
@@ -306,10 +306,10 @@ var TreeView = function() {
                 _data[_capturepoint['index']]['alpha'] = 0.5;
                 _dragpoint['pos'] = {'x': x - self.rectangle.width / 2, 'y': y - _dragpoint['height'] / 2};
                 setPoint(_capturepoint['index'], x, y);
-                _mousepos.x=x;
-                _mousepos.y=y;
+                _mousepos.x = x;
+                _mousepos.y = y;
                 refresh();
-                
+
             }
         });
         $(_container).bind('mouseup', function() {
@@ -320,19 +320,37 @@ var TreeView = function() {
                 _data[_capturepoint['index']]['alpha'] = 1;
                 _lastcapturepoint = _capturepoint;
                 _capturepoint = '';
-                _dragpoint={};
+                _dragpoint = {};
                 _lastcapturepoint['action'] = 'drop';
                 _lastcapturepoint['message'] = _data[_lastcapturepoint['index']]['parent'];
                 refresh();
             }
         });
     };
-
+    var getElementLeft = function(element) {
+        var actualLeft = element.offsetLeft;
+        var current = element.offsetParent;
+        while (current !== null) {
+            actualLeft += current.offsetLeft;
+            current = current.offsetParent;
+            }
+        return actualLeft;
+        };
+    var getElementTop = function(element) {
+        var actualTop = element.offsetTop;
+        var current = element.offsetParent;
+        while (current !== null) {
+            actualTop += current.offsetTop;
+            current = current.offsetParent;
+            }
+        return actualTop;
+        };
     //处理点击事件
     var procClick = function() {
         $(_container).bind('click', function() {
-            var x = event.pageX - this.offsetLeft + $(_container).parent().scrollLeft();
-            var y = event.pageY - this.offsetTop + $(_container).parent().scrollTop();
+//            alert(getElementLeft(_container));
+            var x = event.pageX - getElementLeft(_container) + $(_container).parent().scrollLeft();
+            var y = event.pageY - getElementTop(_container) + $(_container).parent().scrollTop();
             var ret = getPointIndex(x, y);
             //如果点在节点上
             if (ret) {
@@ -406,7 +424,7 @@ var TreeView = function() {
             window.open(_data[pointindex]['link']);
         }
     };
-    
+
     //判断是否为上级节点
     var isParentPoint = function(parent, son) {
         var parents = '';
@@ -431,9 +449,10 @@ var TreeView = function() {
             return;
         }
         var nearestpoint = _data[index];
-        if(self.dropfatherlock==1 && nearestpoint['parent']!=_data[pointindex]['parent'])return;
+        if (self.dropfatherlock == 1 && nearestpoint['parent'] != _data[pointindex]['parent'])
+            return;
         //如果鼠标坐标在节点左侧超出半个节点宽度
-        if(self.dropfatherlock!=1){
+        if (self.dropfatherlock != 1) {
             if (nearestpoint['pos']['x'] - x > self.rectangle.width / 2) {
                 _data[pointindex]['parent'] = nearestpoint['parent'] != '' ? _data[nearestpoint['parent']]['parent'] : '';
                 _data[pointindex]['level'] = nearestpoint['level'] > 0 ? (nearestpoint['level'] - 1) : 0;
@@ -448,7 +467,7 @@ var TreeView = function() {
                 return;
             }
         }
-        
+
         //如果鼠标在节点下方，左右都不超出半个节点宽度，下方超出半个节点高度
         if (y - nearestpoint['pos']['y'] > nearestpoint['height'] / 2) {
             _data[pointindex]['parent'] = nearestpoint['parent'];
@@ -589,7 +608,7 @@ var TreeView = function() {
             }
         }
         for (var item in data) {
-            data[item]['children']=_quickSortPoints(data[item]['children']);
+            data[item]['children'] = _quickSortPoints(data[item]['children']);
             _resetOrderno(data[item]['children']);
         }
         _toppoints = _quickSortPoints(_toppoints);
