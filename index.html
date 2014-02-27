@@ -125,27 +125,26 @@
                             //实例三
                             var sample3tree = new TreeView();
                             sample3tree.init({'container': 'sample3', 'data': json});
-                            sample3tree.onClick(function(data) {
-                                var text = '选中的节点id包括:';
-                                for (var i = 0, l = data.select.length; i < l; i++) {
-                                    text += ',' + data.select[i].index;
+
+                            sample3tree.onClick(function(data){
+                                if(!data){alert('没有选中节点');return;}
+                                var len=data.length;
+                                if(len!==undefined){
+                                    if(len>0){
+                                        var text="选中了节点：";
+                                        for(var i=0;i<len;i++){
+                                            text+=data[i]['index']+',';
+                                        }
+                                        alert(text);
+                                    }
+                                }else{
+                                    alert('删除了节点：'+data['index']);
                                 }
-                                alert(text);
                             });
                             //实例四
                             var sample4tree = new TreeView();
-                            sample4tree.init({'container': 'sample4', 'data': json});
-                            sample4tree.onClick(function(data) {
-                                if (data.delete) {
-                                    var text = '删除节点id:';
-                                    text = text + data.delete.index;
-                                    alert(text);
-                                }
-                            });
-                            //实例五
-                            var sample5tree = new TreeView();
-                            sample5tree.init({'container': 'sample5', 'data': json});
-                            sample5tree.onMouseUp(function(data) {
+                            sample4tree.init({'container': 'sample5', 'data': json});
+                            sample4tree.onMouseUp(function(data) {
                                 var text = '拖拽的节点id:';
                                 text=text+data.index;
                                 text=text+'拖拽节点的父节点是：'+data.message.parent;
@@ -190,10 +189,8 @@ var sample3tree = new TreeView();
 sample3tree.init({'container': 'sample3', 'data': json});
 </code></pre>
                     <canvas id="sample3" width="300" height="300"></canvas>
-                    <p>实例四：删除节点</p>
+                    <p>实例四：拖拽节点</p>
                     <canvas id="sample4" width="300" height="300"></canvas>
-                    <p>实例六：拖拽节点</p>
-                    <canvas id="sample5" width="300" height="300"></canvas>
                     <h3>
                         <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>创建者</h3>
                     <p><a href="http://www.fyhome.com.cn">@fy</a></p>

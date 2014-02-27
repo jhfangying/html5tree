@@ -118,9 +118,18 @@ var TreeView = function() {
     this.onClick = function(func) {
         $(_container).bind('click', function() {
             if (typeof (func) === 'function') {
-                func({'select': _selectpoints, 'delete': _deletepoint});
-                _deletepoint = false;
+                if (_deletepoint) {
+                    func(_deletepoint);
+                } else {
+                    if(_selectpoints.length==0){
+                        func(false);
+                    }else{
+                        func(_selectpoints);
+                    }
+                    
+                }
             }
+            _deletepoint = false;
         });
     };
     //目标弹起绑定
@@ -263,9 +272,17 @@ var TreeView = function() {
                 continue;
             if (_data[item]['draw'] == 2)
                 return false;
-            return {'index': item, 'action': 'delete', 'message': ''};
+            return {'index': item, 'action': 'delete', 'message': _data[item]['parent']?_data[item]['parent']:''};
         }
         return false;
+    };
+    //滚动到目标节点为中心的位置
+    this.scrollTo= function(pointindex) {
+        var containerparentelement=$(_container).parent();
+//        if(containerparentelement)
+        var pianyi =containerparentelement.height() / 2;
+        var y = _data[pointindex]['pos']['y'];
+        containerparentelement.scrollTop(y - pianyi);
     };
     //判断鼠标坐标是否落在热区内
     var inHotArea = function(area, x, y) {
@@ -342,7 +359,14 @@ var TreeView = function() {
 
                 refresh();
                 _lastcapturepoint['action'] = 'drop';
-                _lastcapturepoint['message'] = {'parent': _data[_lastcapturepoint['index']]['parent'], 'order': _data[_data[_lastcapturepoint['index']]['parent']]['children']};
+//                _lastcapturepoint['message'] = {'parent': _data[_lastcapturepoint['index']]['parent'], 'order': _data[_data[_lastcapturepoint['index']]['parent']]['children']};
+                if (_data[_lastcapturepoint['index']]['parent']) {
+                    _lastcapturepoint['message'] = {'parent': _data[_lastcapturepoint['index']]['parent'], 'order': _data[_data[_lastcapturepoint['index']]['parent']]['children']};
+                }else{
+                    
+                    _lastcapturepoint['message'] = {'pid': '', 'order': _toppoints};
+                }
+                
             }
         });
     };
@@ -367,12 +391,12 @@ var TreeView = function() {
     //处理点击事件
     var procClick = function() {
         $(_container).bind('click', function() {
-//            alert(getElementLeft(_container));
             var x = event.pageX - getElementLeft(_container) + $(_container).parent().scrollLeft();
             var y = event.pageY - getElementTop(_container) + $(_container).parent().scrollTop();
             var ret = getPointIndex(x, y);
             //如果点在节点上
             if (ret) {
+                self.scrollTo(ret['index']);
                 //如果是单选模式
                 if (self.singlechoice == 1) {
                     if (_selectpoints[0] == undefined) {
@@ -407,6 +431,8 @@ var TreeView = function() {
                     }
                 }
 
+            }else {
+                _selectpoints = [];
             }
             //判断是否在控制节点上
             ret = getPointControllerIndex(x, y);
