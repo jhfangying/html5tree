@@ -119,7 +119,7 @@ var TreeView = function() {
         $(_container).bind('click', function() {
             if (typeof (func) === 'function') {
                 func({'select': _selectpoints, 'delete': _deletepoint});
-                _deletepoint=false;
+                _deletepoint = false;
             }
         });
     };
@@ -130,6 +130,24 @@ var TreeView = function() {
                 func(_lastcapturepoint);
             }
         });
+    };
+    //获取节点的父节点信息
+    this.getFatherId = function(id) {
+        return _data[id]['parent'];
+    };
+    //返回选中的节点序列数组
+    this.getSelectedIds = function() {
+        return _selectpoints;
+    };
+    //选中节点
+    this.selectPoints = function(ids) {
+        if (typeof (ids) == 'string') {
+            ids = ids.split(',');
+        }
+        for (var i = 0, l = ids.length; i < l; i++) {
+            _selectpoints.push({"index": ids[i], "action": "select", "message": ""});
+        }
+        refresh();
     };
     //重置参数，刷新树上的数据
     var refresh = function() {
@@ -321,10 +339,10 @@ var TreeView = function() {
                 _lastcapturepoint = _capturepoint;
                 _capturepoint = '';
                 _dragpoint = {};
-                
+
                 refresh();
                 _lastcapturepoint['action'] = 'drop';
-                _lastcapturepoint['message'] = {'parent':_data[_lastcapturepoint['index']]['parent'],'order':_data[_data[_lastcapturepoint['index']]['parent']]['children']};
+                _lastcapturepoint['message'] = {'parent': _data[_lastcapturepoint['index']]['parent'], 'order': _data[_data[_lastcapturepoint['index']]['parent']]['children']};
             }
         });
     };
@@ -334,18 +352,18 @@ var TreeView = function() {
         while (current !== null) {
             actualLeft += current.offsetLeft;
             current = current.offsetParent;
-            }
+        }
         return actualLeft;
-        };
+    };
     var getElementTop = function(element) {
         var actualTop = element.offsetTop;
         var current = element.offsetParent;
         while (current !== null) {
             actualTop += current.offsetTop;
             current = current.offsetParent;
-            }
+        }
         return actualTop;
-        };
+    };
     //处理点击事件
     var procClick = function() {
         $(_container).bind('click', function() {
@@ -402,7 +420,7 @@ var TreeView = function() {
             //判断是否点击在删除按钮上
             ret = getPointDeleteButtonIndex(x, y);
             if (ret) {
-                _deletepoint=ret;
+                _deletepoint = ret;
                 if (confirm(self.deletealert)) {
                     deleteTree(ret['index']);
                 }
@@ -416,6 +434,13 @@ var TreeView = function() {
         if (_data[pointindex]['children'] != undefined && _data[pointindex]['children'] != '') {
             for (var i = 0, l = _data[pointindex]['children'].length; i < l; i++) {
                 deleteTree(_data[pointindex]['children'][i]);
+            }
+        }
+        //选中的节点被删除时，选中的节点中也要去除这些被删除的节点
+        for(var i=0,l=_selectpoints.length;i<l;i++){
+            if(_selectpoints[i]['index']==pointindex){
+                _selectpoints.splice(i,1);
+                break;
             }
         }
         delete _data[pointindex];
