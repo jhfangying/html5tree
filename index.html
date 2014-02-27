@@ -185,24 +185,25 @@ sample2tree.init({'container': 'sample2', 'data': json});
                     <canvas id="sample2" width="300" height="300"></canvas>
                     <p>实例三：选择节点</p>
                     <pre><code>
-var sample3tree = new TreeView();
-sample3tree.init({'container': 'sample3', 'data': json});
-sample3tree.onClick(function(data){
-    if(!data){alert('没有选中节点');return;}
-    var len=data.length;
-    if(len!==undefined){
-        if(len>0){
-            var text="选中了节点：";
-            for(var i=0;i<len;i++){
-                text+=data[i]['index']+',';
-            }
-            alert(text);
-        }
-    }else{
-        alert('删除了节点：'+data['index']);
-    }
-});
-</code></pre>
+                    var sample3tree = new TreeView();
+                    sample3tree.init({'container': 'sample3', 'data': json});
+                    sample3tree.onClick(function(data){
+                        if(!data){alert('没有选中节点');return;}
+                        var length=data.length;
+                        if(length!==undefined){
+                            if(len>0){
+                                var text="选中了节点：";
+                                for(var i=0;i < length;i++){
+                                    text+=data[i]['index']+',';
+                                }
+                                alert(text);
+                            }
+                        }else{
+                            alert('删除了节点：'+data['index']);
+                        }
+                    });
+                    </code></pre>
+                    
                     <canvas id="sample3" width="300" height="300"></canvas>
                     <p>实例四：拖拽节点</p>
                     <pre><code>
