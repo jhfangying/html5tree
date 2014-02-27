@@ -121,7 +121,12 @@ var TreeView = function() {
                 if (_deletepoint) {
                     func(_deletepoint);
                 } else {
-                    func(_selectpoints);
+                    if(_selectpoints.length==0){
+                        func(false);
+                    }else{
+                        func(_selectpoints);
+                    }
+                    
                 }
             }
             _deletepoint = false;
