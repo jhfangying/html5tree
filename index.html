@@ -104,26 +104,7 @@
                     </table>    
                     <h3>
                         <a name="html5tree_shili" class="anchor" href="#html5tree_shili"><span class="octicon octicon-link"></span></a>实例</h3>
-                    <p>测试数据</p>
-                    <pre><code>
-var json={
-            "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "节点1"},
-            "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "测试下长文字节点的排版问题","orderno":4,"children": [], "parent": "52ff228fe6d03f680a00675f"},
-            "52ff2291e6d03f680a001f0e": {"_id": "52ff2291e6d03f680a001f0e", "text": "节点2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-            "52ff2291e6d03f680a001f10": {"_id": "52ff2291e6d03f680a001f10", "text": "长文字节点的排版问题已经解决了", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-            "52ff2291e6d03f680a001f0f": {"_id": "52ff2291e6d03f680a001f0f", "text": "节点3", "children": [], "parent": "52ff228fe6d03f680a00675f"},
-        };
-</code></pre>
-
-                    <p>
-                        实例一：创建树
-                    </p>
-                    <pre><code>
-var sample1tree=new TreeView();
-sample1tree.init({'container':'sample1','data':json});
-
-</code></pre>
-                    <script type="text/javascript">
+                        <script type="text/javascript">
                         var json = {
                             "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "节点1"},
                             "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "测试下长文字节点的排版问题", "orderno": 4, "children": [], "parent": "52ff228fe6d03f680a00675f"},
@@ -135,6 +116,7 @@ sample1tree.init({'container':'sample1','data':json});
                             //实例一
                             var sample1tree = new TreeView();
                             sample1tree.init({'container': 'sample1', 'data': json});
+                            sample1tree.selectPoints('52ff228fe6d03f680a00675f,52ff2291e6d03f680a001f0e');
                             //实例二
                             var sample2tree = new TreeView();
                             sample2tree.singlechoice = 1;
@@ -172,6 +154,26 @@ sample1tree.init({'container':'sample1','data':json});
                             });
                         });
                     </script>
+                    <p>测试数据</p>
+                    <pre><code>
+var json={
+            "52ff228fe6d03f680a00675f": {"_id": "52ff228fe6d03f680a00675f", "text": "节点1"},
+            "52ff2291e6d03f680a001f0c": {"_id": "52ff2291e6d03f680a001f0c", "text": "测试下长文字节点的排版问题","orderno":4,"children": [], "parent": "52ff228fe6d03f680a00675f"},
+            "52ff2291e6d03f680a001f0e": {"_id": "52ff2291e6d03f680a001f0e", "text": "节点2", "children": [], "parent": "52ff228fe6d03f680a00675f"},
+            "52ff2291e6d03f680a001f10": {"_id": "52ff2291e6d03f680a001f10", "text": "长文字节点的排版问题已经解决了", "children": [], "parent": "52ff228fe6d03f680a00675f"},
+            "52ff2291e6d03f680a001f0f": {"_id": "52ff2291e6d03f680a001f0f", "text": "节点3", "children": [], "parent": "52ff228fe6d03f680a00675f"},
+        };
+</code></pre>
+
+                    <p>
+                        实例一：创建树
+                    </p>
+                    <pre><code>
+var sample1tree=new TreeView();
+sample1tree.init({'container':'sample1','data':json});
+sample1tree.selectPoints('52ff228fe6d03f680a00675f,52ff2291e6d03f680a001f0e');
+</code></pre>
+                    
                     <canvas id="sample1" width="300" height="300"></canvas>
                     <p>
                         实例二：创建单选树，锁定节点只能在同父节点下移动</p>
