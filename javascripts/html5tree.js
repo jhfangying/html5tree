@@ -148,7 +148,8 @@ var TreeView = function() {
     this.getSelectedIds = function() {
         return _selectpoints;
     };
-    //选中节点
+
+    //选中多个节点
     this.selectPoints = function(ids) {
         if (typeof (ids) == 'string') {
             ids = ids.split(',');
@@ -158,6 +159,11 @@ var TreeView = function() {
         }
         refresh();
     };
+    //选中单个节点
+    this.selectPoint=function(id){
+        _selectpoints.push({"index": id, "action": "select", "message": ""});
+        refresh();
+    }
     //重置参数，刷新树上的数据
     var refresh = function() {
         _resetParams();

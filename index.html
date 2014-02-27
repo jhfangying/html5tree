@@ -99,7 +99,8 @@
                             <tr><td>onMouseUp()</td><td>给树绑定拖拽事件的处理方法</td></tr>
                             <tr><td>getFatherId()</td><td>获取选中节点的父id</td></tr>
                             <tr><td>getSelectedIds()</td><td>获取选中的节点序列</td></tr>
-                            <tr><td>selectPoints()</td><td>设置选中节点</td></tr>
+                            <tr><td>selectPoints()</td><td>设置选中多个节点</td></tr>
+                            <tr><td>selectPoint()</td><td>设置选中单个节点</td></tr>
                         </tbody>
                     </table>    
                     <h3>
@@ -143,7 +144,7 @@
                             });
                             //实例四
                             var sample4tree = new TreeView();
-                            sample4tree.init({'container': 'sample5', 'data': json});
+                            sample4tree.init({'container': 'sample4', 'data': json});
                             sample4tree.onMouseUp(function(data) {
                                 var text = '拖拽的节点id:';
                                 text=text+data.index;
@@ -151,6 +152,9 @@
                                 text=text+'拖拽节点的父节点下子节点的顺序是：'+data.message.order;
                                 alert(text);
                             });
+                            var sample5tree = new TreeView();
+                            sample5tree.init({'container': 'sample5', 'data': json});
+                            sample5tree.selectPoints('52ff2291e6d03f680a001f0c,52ff2291e6d03f680a001f10');
                         });
                     </script>
                     <p>测试数据</p>
@@ -208,7 +212,7 @@ sample2tree.init({'container': 'sample2', 'data': json});
                     <p>实例四：拖拽节点</p>
                     <pre><code>
 var sample4tree = new TreeView();
-sample4tree.init({'container': 'sample5', 'data': json});
+sample4tree.init({'container': 'sample4', 'data': json});
 sample4tree.onMouseUp(function(data) {
     var text = '拖拽的节点id:';
     text=text+data.index;
@@ -218,6 +222,13 @@ sample4tree.onMouseUp(function(data) {
 });
                     </code></pre>
                     <canvas id="sample4" width="300" height="300"></canvas>
+                    <p>实例五：默认节点</p>
+                    <pre><code>
+var sample5tree = new TreeView();
+sample5tree.init({'container': 'sample5', 'data': json});
+sample5tree.selectPoints('52ff2291e6d03f680a001f0c,52ff2291e6d03f680a001f10');
+                    </code></pre>
+                    <canvas id="sample5" width="300" height="300"></canvas>
                     <h3>
                         <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>创建者</h3>
                     <p><a href="http://www.fyhome.com.cn">@fy</a></p>
