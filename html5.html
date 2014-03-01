@@ -17,21 +17,21 @@
                 var treeViewInstance = new TreeView;
                 treeViewInstance.linestyle=1;
                 treeViewInstance.init({'container': 'canvas', 'data': json});
-                treeViewInstance.onClick(function(data){
-                    if(!data){alert('没有选中节点');return;}
-                    var len=data.length;
-                    if(len!==undefined){
-                        if(len>0){
-                            var text="选中了节点：";
-                            for(var i=0;i<len;i++){
-                                text+=data[i]['index']+',';
-                            }
-                            alert(text);
-                        }
-                    }else{
-                        alert('删除了节点：'+data['index']);
-                    }
-                });
+                // treeViewInstance.onClick(function(data){
+                //     if(!data){alert('没有选中节点');return;}
+                //     var len=data.length;
+                //     if(len!==undefined){
+                //         if(len>0){
+                //             var text="选中了节点：";
+                //             for(var i=0;i<len;i++){
+                //                 text+=data[i]['index']+',';
+                //             }
+                //             alert(text);
+                //         }
+                //     }else{
+                //         alert('删除了节点：'+data['index']);
+                //     }
+                // });
             });
         </script>
     </head>
